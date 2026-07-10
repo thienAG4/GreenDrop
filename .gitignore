@@ -14,3 +14,4 @@ backend/uploads/blog/*
 backend/uploads/products/*
 backend/uploads/returns/*
 backend/uploads/reviews/*
+.claude/*
