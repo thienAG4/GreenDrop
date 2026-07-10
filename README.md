@@ -1,81 +1,86 @@
-# GreenDrop Terrarium
+# 🪴 GreenDrop Terrarium
 
-Full-stack e-commerce app for a terrarium shop: catalog, cart, checkout,
-orders, Builder (AI/3D terrarium design), returns & refunds, reviews, and
-promotions — plus a separate admin panel. **Node.js/Express + MySQL 8**
-backend (Routes → Controllers → Services) and an **AngularJS 1.x +
-Bootstrap 5** frontend. Coding conventions and architecture philosophy live
-in `AGENTS.md` — read that before writing any code.
+**Team 10**
 
-## Repo layout
+Ứng dụng thương mại điện tử full-stack cho một cửa hàng terrarium (bể cảnh
+mini): danh mục sản phẩm, giỏ hàng, thanh toán, đơn hàng, Builder (thiết kế
+terrarium bằng AI/3D), đổi trả & hoàn tiền, đánh giá, và khuyến mãi — cùng
+một trang quản trị (admin) riêng biệt. Backend dùng **Node.js/Express +
+MySQL 8** (Routes → Controllers → Services) và frontend dùng **AngularJS
+1.x + Bootstrap 5**. Quy ước code và triết lý kiến trúc được ghi trong
+`AGENTS.md` — đọc file đó trước khi viết bất kỳ đoạn code nào.
+
+## 📁 Cấu trúc thư mục
 
 ```
-docker-compose.yml      # MySQL 8 + backend API, wired together
+docker-compose.yml      # MySQL 8 + backend API, được cấu hình sẵn với nhau
 backend/
-  create_database.sql   # schema (24 tables) — see "Database schema" below
-  init.sql               # seed data
+  create_database.sql   # schema (24 bảng) — xem mục "Cơ sở dữ liệu" bên dưới
+  init.sql               # dữ liệu seed (dữ liệu mẫu)
   app.js, server.js
-  config/db.js           # mysql2/promise pool
+  config/db.js           # connection pool của mysql2/promise
   routes/ controllers/ services/   # Routes → Controllers → Services
-  middleware/            # auth (JWT), multer upload, error handler
-  utils/constants.js     # business-rule constants & enum mappings (read this first)
-  uploads/               # product/review/return/blog images (or a docker volume)
+  middleware/            # xác thực (JWT), upload file (multer), xử lý lỗi
+  utils/constants.js     # hằng số nghiệp vụ & ánh xạ enum (nên đọc đầu tiên)
+  uploads/               # ảnh sản phẩm/đánh giá/đổi trả/blog (hoặc docker volume)
 client/
-  index.html             # single entry point, loads AngularJS + Bootstrap via CDN
-  app.js, app.routes.js   # module definition, ngRoute config (all routes)
-  services/ controllers/ directives/ filters/   # one module ('app'), flat by feature
-  views/                 # HTML partials matching each route
-  css/                   # tokens.css (design tokens) + components.css + layout.css
+  index.html             # điểm vào duy nhất, load AngularJS + Bootstrap qua CDN
+  app.js, app.routes.js   # khai báo module, cấu hình ngRoute (toàn bộ route)
+  services/ controllers/ directives/ filters/   # một module ('app'), phẳng theo tính năng
+  views/                 # các HTML partial tương ứng với từng route
+  css/                   # tokens.css (design token) + components.css + layout.css
 admin/
-  Standalone admin panel, split out of client/ - own AngularJS module
-  ('adminApp'), own index.html/port/login, same conventions/design tokens as
-  client/ but no shared Angular module. See "Admin panel" below.
+  Trang quản trị độc lập, tách riêng khỏi client/ - có module AngularJS
+  riêng ('adminApp'), có index.html/port/trang đăng nhập riêng, dùng chung
+  quy ước/design token với client/ nhưng không dùng chung module Angular.
+  Xem mục "Trang quản trị" bên dưới.
 ```
 
-## Quick start (Docker Compose — recommended)
+## 🚀 Khởi động nhanh (Docker Compose — khuyến nghị)
 
-Requires Docker.
+Yêu cầu đã cài Docker.
 
 ```bash
 docker compose up -d --build
 ```
 
-This builds the backend image, starts MySQL 8, and automatically loads
-`backend/create_database.sql` then `backend/init.sql` on first boot (via
-`docker-entrypoint-initdb.d`). The API comes up on **http://localhost:4000**.
+Lệnh này build image cho backend, khởi động MySQL 8, và tự động nạp
+`backend/create_database.sql` rồi đến `backend/init.sql` ở lần khởi động
+đầu tiên (thông qua `docker-entrypoint-initdb.d`). API sẽ chạy tại
+**http://localhost:4000**.
 
 ```bash
 curl http://localhost:4000/api/health
 # {"data":{"status":"ok"}}
 ```
 
-Reset the database (wipes all data and re-seeds from the SQL files):
+Reset lại database (xóa toàn bộ dữ liệu và nạp lại từ các file SQL):
 
 ```bash
 docker compose down -v && docker compose up -d --build
 ```
 
-## Running the frontend
+## 💻 Chạy frontend
 
-Plain static files, no build step (AngularJS 1.x, not modern Angular) — but
-`ngRoute`'s `templateUrl` partials are blocked by CORS under `file://`, so
-**serve it over HTTP**:
+Là các file tĩnh thuần túy, không cần bước build (AngularJS 1.x, không phải
+Angular hiện đại) — nhưng các partial `templateUrl` của `ngRoute` bị chặn
+bởi CORS khi mở qua `file://`, nên **phải chạy qua HTTP**:
 
 ```bash
 cd client
 npm install
-npm start   # http-server on http://localhost:8080, caching disabled
+npm start   # chạy http-server tại http://localhost:8080, đã tắt cache
 ```
 
-Open **http://localhost:8080/** with the backend running on port 4000. The
-API base URL is set in `client/app.js` (`API_BASE_URL` constant).
+Mở **http://localhost:8080/** trong khi backend đang chạy ở cổng 4000. Base
+URL của API được cấu hình trong `client/app.js` (hằng số `API_BASE_URL`).
 
-## Admin panel
+## 🛠️ Trang quản trị (Admin)
 
-A **separate standalone app** at `admin/` — own AngularJS module
-(`adminApp`), own login screen, own port. Talks to the same backend API and
-staff/admin accounts, but doesn't share a browser origin with `client/`
-(logging into one doesn't log you into the other).
+Là một **ứng dụng độc lập, tách riêng** nằm ở `admin/` — có module
+AngularJS riêng (`adminApp`), màn hình đăng nhập riêng, cổng riêng. Dùng
+chung backend API và tài khoản nhân viên/admin, nhưng không dùng chung
+origin trình duyệt với `client/` (đăng nhập ở app này không đăng nhập app kia).
 
 ```bash
 cd admin
@@ -83,163 +88,181 @@ npm install
 npm start   # http://localhost:8081
 ```
 
-Covers: products, Combo Builder (admin-authored designs), categories, orders,
-returns & refunds, customers, review moderation, vouchers, promotion events,
-banners, and blog CRUD, plus a revenue/top-product dashboard.
+Bao gồm: sản phẩm, Combo Builder (thiết kế do admin tạo), danh mục, đơn
+hàng, đổi trả & hoàn tiền, khách hàng, kiểm duyệt đánh giá, voucher, sự
+kiện khuyến mãi, banner, và CRUD cho blog, cùng một dashboard doanh
+thu/sản phẩm bán chạy.
 
-## Seeded accounts
+## 🔑 Tài khoản mẫu (seed data)
 
-Every seeded user shares one bcrypt-hashed password: **`greendrop123`**.
+Tất cả tài khoản mẫu đều dùng chung một mật khẩu đã băm bằng bcrypt:
+**`greendrop123`**.
 
 - Admin: `admin@greendrop.com`
-- Staff: `lily@greendrop.com`, `tom@greendrop.com`
-- Customers: `alice@example.com`, `bob@example.com`, `carol@example.com`,
-  `dave@example.com`, or `customerN@example.com` (N = 8-37)
+- Nhân viên: `lily@greendrop.com`, `tom@greendrop.com`
+- Khách hàng: `alice@example.com`, `bob@example.com`, `carol@example.com`,
+  `dave@example.com`, hoặc `customerN@example.com` (N = 8-37)
 
-Register a new account via the frontend or `POST /api/auth/register`, or use
-"Quên mật khẩu" (prints its verification code to the backend console log —
-simulated email).
+Có thể đăng ký tài khoản mới qua frontend hoặc `POST /api/auth/register`,
+hoặc dùng chức năng "Quên mật khẩu" (mã xác minh sẽ được in ra console log
+của backend — giả lập gửi email).
 
-## Database schema
+## 🗄️ Cơ sở dữ liệu
 
-`backend/create_database.sql` defines **24 tables / 34 FK relationships**,
-grouped by feature:
+`backend/create_database.sql` định nghĩa **24 bảng / 34 quan hệ khóa ngoại
+(FK)**, được nhóm theo tính năng:
 
-- **Identity**: `USERS`, `ADDRESS`
-- **Catalog**: `CATEGORIES`, `PRODUCTS`, `IMAGES`, `PRODUCT_ATTRIBUTES`, `PRODUCT_FAQS`
+- **Định danh**: `USERS`, `ADDRESS`
+- **Danh mục sản phẩm**: `CATEGORIES`, `PRODUCTS`, `IMAGES`, `PRODUCT_ATTRIBUTES`, `PRODUCT_FAQS`
 - **Combo Builder**: `COMBOS`, `COMBO_ITEMS`
-- **Cart**: `CARTS`, `CART_ITEMS`
-- **Orders**: `ORDERS`, `ORDER_ITEMS`, `ORDER_ITEM_COMPONENTS`
-- **Returns & refunds**: `RETURN_REQUESTS`, `RETURN_ITEMS`, `REFUNDS`
-- **Reviews**: `REVIEWS`
-- **Promotions**: `VOUCHERS`, `PROMOTION_EVENTS`, `PROMOTION_EVENT_PRODUCTS`, `BANNERS`
-- **Ops**: `AUDIT_LOGS`, `BLOG_POSTS`
+- **Giỏ hàng**: `CARTS`, `CART_ITEMS`
+- **Đơn hàng**: `ORDERS`, `ORDER_ITEMS`, `ORDER_ITEM_COMPONENTS`
+- **Đổi trả & hoàn tiền**: `RETURN_REQUESTS`, `RETURN_ITEMS`, `REFUNDS`
+- **Đánh giá**: `REVIEWS`
+- **Khuyến mãi**: `VOUCHERS`, `PROMOTION_EVENTS`, `PROMOTION_EVENT_PRODUCTS`, `BANNERS`
+- **Vận hành**: `AUDIT_LOGS`, `BLOG_POSTS`
 
-Two deviations from the original schema draft:
+Hai điểm khác biệt so với bản schema gốc ban đầu:
 
-- **`IMAGES` replaces a private `PRODUCT_IMAGES` table.** A shared table
-  (`product_id` nullable, `combo_id` nullable, `is_combo` flag) lets both
-  `PRODUCTS` and `COMBOS` hang a 1-M image gallery off one table;
-  `sort_order = 1` is always the thumbnail. MySQL 8 won't allow a CHECK
-  constraint on a column that also carries an `ON UPDATE/DELETE CASCADE` FK,
-  so "exactly one of `product_id`/`combo_id` is set" is enforced in
-  `backend/services/products.service.js`, not in SQL.
-- **`BLOG_POSTS` was added** to back a real admin-managed blog (previously
-  hardcoded frontend content) — `created_by_user_id → USERS`, `ON DELETE RESTRICT`.
+- **`IMAGES` thay thế cho một bảng `PRODUCT_IMAGES` riêng.** Đây là một
+  bảng dùng chung (`product_id` có thể NULL, `combo_id` có thể NULL, cờ
+  `is_combo`) cho phép cả `PRODUCTS` và `COMBOS` có một thư viện ảnh
+  1-nhiều (1-M) trên cùng một bảng; `sort_order = 1` luôn là ảnh đại diện
+  (thumbnail). MySQL 8 không cho phép đặt ràng buộc CHECK trên một cột
+  đồng thời có hành động FK `ON UPDATE/DELETE CASCADE`, nên quy tắc "chỉ
+  một trong hai `product_id`/`combo_id` được đặt giá trị" được kiểm tra ở
+  `backend/services/products.service.js`, không phải trong SQL.
+- **`BLOG_POSTS` được thêm mới** để hỗ trợ một blog thực sự do admin quản
+  lý (trước đây nội dung blog được viết cứng ở frontend) —
+  `created_by_user_id → USERS`, `ON DELETE RESTRICT`.
 
-## Business processes & rules
+## 📋 Quy trình & quy tắc nghiệp vụ
 
-The app implements 7 core business processes:
+Ứng dụng triển khai 7 quy trình nghiệp vụ cốt lõi:
 
-1. **Product discovery & purchase** — guests and customers browse/search,
-   add to cart, and check out (COD or a simulated online gateway with a QR
-   code). At most one voucher per order; online payment keeps the QR valid
-   for 15 minutes.
-2. **Builder purchase (AI or 3D)** — a design needs at least one pot and one
-   substrate soil (BR-02) before it can be saved or added to cart; only
-   in-stock components are usable, and Builder products carry an extra
-   assembly fee at checkout.
-3. **Order cancellation & refund** — customers can cancel only while an
-   order is in the pre-shipping "preparing" state; COD cancellations need no
-   refund, online payments trigger an automatic gateway refund (falling back
-   to manual admin processing on failure).
-4. **Return & refund** — return requests must be filed within a deadline of
-   the order's `DELIVERED` status (48h for damage/shipping-error reasons, 7
-   days for latent-defect reasons) with at least one evidence image; accounts
-   with more than 3 return requests in 180 days are flagged for manual
-   review. Refunds only fire after the returned item is physically received
-   and inspected.
-5. **Product reviews** — only for products from the reviewer's own
-   `DELIVERED` orders, one review per order, 1-5 star rating, with basic
-   spam/profanity filtering before publishing.
-6. **Product management** — admin-only CRUD; a product can't be deleted
-   while it's in an order that's still pending/preparing.
-7. **Promotion creation** — admin-only vouchers/banners/promotion events,
-   each with a start/end date window; expired or not-yet-active promotions
-   are hidden or rejected automatically.
+1. **Khám phá & mua sản phẩm** — khách vãng lai (guest) và khách hàng
+   (customer) duyệt/tìm kiếm sản phẩm, thêm vào giỏ hàng, và thanh toán
+   (COD hoặc cổng thanh toán online giả lập kèm mã QR). Mỗi đơn hàng chỉ
+   áp dụng tối đa một voucher; với thanh toán online, mã QR có hiệu lực
+   trong 15 phút.
+2. **Mua hàng qua Builder (AI hoặc 3D)** — một thiết kế cần có ít nhất một
+   chậu/bình và một loại đất nền (BR-02) trước khi có thể lưu hoặc thêm
+   vào giỏ hàng; chỉ được dùng các thành phần còn hàng, và sản phẩm từ
+   Builder sẽ có thêm phí lắp ráp khi thanh toán.
+3. **Hủy đơn & hoàn tiền** — khách hàng chỉ có thể hủy đơn khi đơn đang ở
+   trạng thái "đang chuẩn bị hàng" (trước khi giao vận); đơn COD bị hủy
+   thì không cần hoàn tiền, đơn thanh toán online sẽ tự động kích hoạt
+   hoàn tiền qua cổng thanh toán (nếu thất bại sẽ chuyển sang xử lý thủ
+   công bởi admin).
+4. **Đổi trả & hoàn tiền** — yêu cầu đổi trả phải được gửi trong một
+   khoảng thời hạn tính từ khi đơn hàng chuyển sang trạng thái
+   `DELIVERED` (48 giờ với lý do hư hỏng/lỗi vận chuyển, 7 ngày với lý do
+   lỗi tiềm ẩn của sản phẩm) và phải kèm ít nhất một ảnh minh chứng; tài
+   khoản có hơn 3 yêu cầu đổi trả trong 180 ngày sẽ bị gắn cờ để admin xét
+   duyệt thủ công. Hoàn tiền chỉ được thực hiện sau khi sản phẩm trả lại
+   được nhận và kiểm tra thực tế.
+5. **Đánh giá sản phẩm** — chỉ áp dụng cho sản phẩm thuộc các đơn hàng đã
+   `DELIVERED` của chính người đánh giá, mỗi đơn hàng chỉ được đánh giá
+   một lần, thang điểm 1-5 sao, có kiểm duyệt spam/ngôn từ không phù hợp
+   cơ bản trước khi hiển thị.
+6. **Quản lý sản phẩm** — chỉ admin mới được CRUD; không thể xóa một sản
+   phẩm nếu nó đang nằm trong đơn hàng ở trạng thái chờ xử lý/đang chuẩn
+   bị hàng.
+7. **Tạo khuyến mãi** — chỉ admin mới được tạo voucher/banner/sự kiện
+   khuyến mãi, mỗi cái có khoảng thời gian bắt đầu/kết thúc riêng; các
+   khuyến mãi hết hạn hoặc chưa đến thời gian áp dụng sẽ tự động bị ẩn
+   hoặc từ chối.
 
-The original spec left "how is a combo product modeled?" open between three
-options; this build resolved it as **both** — a combo is a real product row
-(name, price) **and** is defined by its component items.
+Bản đặc tả gốc để ngỏ câu hỏi "một sản phẩm combo nên được mô hình hóa như
+thế nào?" giữa ba lựa chọn; ở bản dựng này, câu trả lời được chốt là **cả
+hai** — một combo vừa là một dòng sản phẩm thực sự (tên, giá) **vừa** được
+định nghĩa bởi các thành phần cấu tạo nên nó.
 
-## API overview
+## 🔌 Tổng quan API
 
-All responses use `{ data, message }` on success or `{ error }` on failure.
-Auth uses `Authorization: Bearer <token>`. Guests carry a client-generated
-`X-Session-Token` header to identify their cart/checkout across requests.
+Mọi response đều dùng dạng `{ data, message }` khi thành công hoặc
+`{ error }` khi thất bại. Xác thực dùng header `Authorization: Bearer
+<token>`. Khách vãng lai (guest) mang theo header `X-Session-Token` do
+client tự sinh để định danh giỏ hàng/thanh toán xuyên suốt các request.
 
-| Area | Routes |
+| Nhóm chức năng | Route |
 |---|---|
-| Auth | `POST /api/auth/register`, `/login`, `GET /me`, `/forgot-password`, `/verify-reset-code`, `/reset-password`, `/change-password` |
-| Users | `PUT /api/users/me`, addresses CRUD under `/api/users/me/addresses`, admin user list/status |
-| Catalog | `GET /api/categories`, `GET /api/products` (search/filter/sort/paginate), `GET /api/products/:id`, admin CRUD |
-| Cart | `GET/POST/PUT/DELETE /api/cart` (guest via header, customer via token) |
-| Builder | `POST /api/combos` (AI or 3D design), `/ai-preview`, `/mine`, update/delete |
-| Checkout/Orders | `POST /api/orders`, `GET /mine`, `/admin`, `/track`, `/:id`, payment confirm, cancel, status transitions |
-| Returns/Refunds | `POST /api/returns` (with evidence images), `/:id/tracking`, admin approve/reject/item-received, `/api/returns/refunds` admin view + retry |
-| Reviews | `POST /api/reviews` (multipart, optional image), `GET /api/reviews/product/:id`, `/mine`, admin moderation |
-| Promotions | `GET /api/vouchers/active` (public), vouchers/promotion events/banners admin CRUD |
-| Audit logs | `GET /api/audit-logs` (admin) |
+| Xác thực | `POST /api/auth/register`, `/login`, `GET /me`, `/forgot-password`, `/verify-reset-code`, `/reset-password`, `/change-password` |
+| Người dùng | `PUT /api/users/me`, CRUD địa chỉ tại `/api/users/me/addresses`, danh sách/trạng thái người dùng cho admin |
+| Danh mục sản phẩm | `GET /api/categories`, `GET /api/products` (tìm kiếm/lọc/sắp xếp/phân trang), `GET /api/products/:id`, CRUD cho admin |
+| Giỏ hàng | `GET/POST/PUT/DELETE /api/cart` (guest qua header, customer qua token) |
+| Builder | `POST /api/combos` (thiết kế AI hoặc 3D), `/ai-preview`, `/mine`, cập nhật/xóa |
+| Thanh toán/Đơn hàng | `POST /api/orders`, `GET /mine`, `/admin`, `/track`, `/:id`, xác nhận thanh toán, hủy đơn, chuyển trạng thái |
+| Đổi trả/Hoàn tiền | `POST /api/returns` (kèm ảnh minh chứng), `/:id/tracking`, admin duyệt/từ chối/xác nhận đã nhận hàng, `/api/returns/refunds` xem + thử lại cho admin |
+| Đánh giá | `POST /api/reviews` (multipart, ảnh tùy chọn), `GET /api/reviews/product/:id`, `/mine`, kiểm duyệt cho admin |
+| Khuyến mãi | `GET /api/vouchers/active` (public), CRUD voucher/sự kiện khuyến mãi/banner cho admin |
+| Nhật ký hệ thống | `GET /api/audit-logs` (admin) |
 
-## Key simplifications vs. the original spec
+## 🧪 Các đơn giản hóa chính so với đặc tả gốc
 
-The schema is treated as fixed (aside from the two deviations above); where
-the business rules or design needed something the schema has no column for,
-the workaround is centralized in **`backend/utils/constants.js`**:
+Schema được xem là cố định (ngoại trừ hai điểm khác biệt nêu trên); ở
+những chỗ quy tắc nghiệp vụ hoặc thiết kế cần một cột mà schema không có,
+cách xử lý được tập trung tại **`backend/utils/constants.js`**:
 
-- Order/return status enums (`pending/confirmed/shipping/delivered/cancelled/returned`,
-  `pending/approved/rejected/completed`) stand in for the business doc's
-  longer-named statuses.
-- `CART_ITEMS` has no `quantity` column — one row per unit instead.
-- `COMBOS.created_by_user_id` and `ORDERS.user_id` are `NOT NULL`, so guest
-  Builder saves require login, and guest checkout transparently creates a
-  lightweight `USERS` row behind the scenes.
-- `REFUNDS.return_id` is `NOT NULL` — an order-cancellation refund is
-  recorded as a system-generated `RETURN_REQUESTS` row.
-- Payment gateways (MoMo/VNPay/QR) and email/SMS are **simulated**, not wired
-  to real providers.
-- Password reset codes live in an in-memory `Map` (lost on backend restart).
-- The wishlist and 3D Terrarium Studio's canvas are client-only
-  simplifications (no backing tables; the "3D" studio is a 2D click/drag canvas).
-- The Combo Builder's AI preview calls Pixazo's SDXL Base 1.0 API when
-  `PIXAZO_API_KEY` is set, otherwise falls back to a placeholder image.
+- Các enum trạng thái đơn hàng/đổi trả
+  (`pending/confirmed/shipping/delivered/cancelled/returned`,
+  `pending/approved/rejected/completed`) đóng vai trò thay thế cho các tên
+  trạng thái dài hơn trong tài liệu nghiệp vụ.
+- `CART_ITEMS` không có cột `quantity` — thay vào đó mỗi đơn vị sản phẩm
+  là một dòng riêng.
+- `COMBOS.created_by_user_id` và `ORDERS.user_id` đều `NOT NULL`, nên việc
+  lưu thiết kế Builder của khách vãng lai bắt buộc phải đăng nhập, còn
+  checkout của khách vãng lai sẽ tự động tạo ngầm một dòng `USERS` tối
+  giản phía sau.
+- `REFUNDS.return_id` là `NOT NULL` — khoản hoàn tiền do hủy đơn được ghi
+  nhận dưới dạng một dòng `RETURN_REQUESTS` do hệ thống tự tạo.
+- Các cổng thanh toán (MoMo/VNPay/QR) và email/SMS đều được **giả lập**,
+  chưa kết nối với nhà cung cấp thật.
+- Mã xác minh đặt lại mật khẩu được lưu trong một `Map` trong bộ nhớ (mất
+  khi backend khởi động lại).
+- Wishlist và canvas của 3D Terrarium Studio là các đơn giản hóa chỉ chạy
+  ở phía client (không có bảng lưu trữ tương ứng; "3D" Studio thực chất là
+  một canvas kéo-thả 2D).
+- Tính năng xem trước ảnh AI của Combo Builder gọi API SDXL Base 1.0 của
+  Pixazo khi có `PIXAZO_API_KEY`, nếu không sẽ dùng ảnh placeholder thay thế.
 
-## Environment variables (`backend/.env`)
+## ⚙️ Biến môi trường (`backend/.env`)
 
-| Variable | Purpose |
+| Biến | Công dụng |
 |---|---|
-| `PORT` | API port (default 4000) |
-| `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD`, `DB_NAME` | MySQL connection |
-| `JWT_SECRET` | Signing key for auth tokens — set a real random value |
-| `JWT_EXPIRES_IN` | Token lifetime (default `7d`) |
-| `PUBLIC_UPLOADS_URL` | Base URL used to build links to uploaded images |
-| `PIXAZO_API_KEY` | Optional. Pixazo API key for the Combo Builder's real AI preview image. Unset = simulated placeholder. |
+| `PORT` | Cổng chạy API (mặc định 4000) |
+| `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD`, `DB_NAME` | Kết nối MySQL |
+| `JWT_SECRET` | Khóa ký cho token xác thực — cần đặt một giá trị ngẫu nhiên thật sự |
+| `JWT_EXPIRES_IN` | Thời gian sống của token (mặc định `7d`) |
+| `PUBLIC_UPLOADS_URL` | Base URL dùng để dựng link tới các ảnh đã upload |
+| `PIXAZO_API_KEY` | Không bắt buộc. API key của Pixazo cho ảnh xem trước AI thật của Combo Builder. Không đặt = dùng ảnh placeholder giả lập. |
 
-## Manual backend setup (no Docker)
+## 🔧 Cài đặt backend thủ công (không dùng Docker)
 
-1. Have MySQL 8 running locally.
-2. Load the schema and seed data:
+1. Đảm bảo MySQL 8 đang chạy ở máy local.
+2. Nạp schema và dữ liệu mẫu:
    ```bash
    mysql -uroot -p < backend/create_database.sql
    mysql -uroot -p < backend/init.sql
    ```
-3. Configure the backend:
+3. Cấu hình backend:
    ```bash
    cd backend
    cp .env.example .env
-   # edit .env with your DB credentials
+   # chỉnh sửa .env với thông tin kết nối DB của bạn
    npm install
-   npm start          # or: npm run dev (auto-restart on file changes)
+   npm start          # hoặc: npm run dev (tự khởi động lại khi file thay đổi)
    ```
 
-## Status
+## ✅ Tình trạng hiện tại
 
-Done: full schema + seed data, Docker Compose environment, the full backend
-API (auth, catalog, cart, Builder, checkout, cancellation/refunds, returns,
-reviews, promotions, audit logging), and the full AngularJS frontend
-(storefront, cart/checkout/payment, account area, order/return flows, Combo
-Builder, admin panel, static content pages).
+Đã hoàn thành: toàn bộ schema + dữ liệu mẫu, môi trường Docker Compose,
+toàn bộ backend API (xác thực, danh mục sản phẩm, giỏ hàng, Builder,
+thanh toán, hủy đơn/hoàn tiền, đổi trả, đánh giá, khuyến mãi, nhật ký hệ
+thống), và toàn bộ frontend AngularJS (trang bán hàng, giỏ hàng/thanh
+toán, khu vực tài khoản, luồng đơn hàng/đổi trả, Combo Builder, trang
+quản trị, các trang nội dung tĩnh).
 
-Known gaps / intentionally out of scope: real 3D rendering, real payment
-gateway integration, real email/SMS delivery, wishlist/blog persistence
-handled client-side where noted above.
+Các phần còn thiếu / chủ đích nằm ngoài phạm vi: render 3D thật, tích hợp
+cổng thanh toán thật, gửi email/SMS thật, lưu trữ wishlist/blog được xử
+lý ở phía client như đã ghi chú ở trên.
