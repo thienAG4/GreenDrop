@@ -1,0 +1,27 @@
+<nav class="gd-admin-sidebar">
+  <a href="/" class="gd-logo"><i class="bi bi-flower2"></i> Greendrop</a>
+
+  <div class="gd-admin-nav-group">
+    <h6>Chính</h6>
+    <a href="/" ng-class="{active: side.isActive('/')}"><i class="bi bi-grid-1x2"></i> Tổng quan</a>
+    <a href="/don-hang" ng-class="{active: side.isActive('/don-hang')}"><i class="bi bi-bag-check"></i> Đơn hàng</a>
+    <a href="/tra-hang" ng-class="{active: side.isActive('/tra-hang')}"><i class="bi bi-arrow-return-left"></i> Trả hàng &amp; Hoàn tiền</a>
+    <a href="/san-pham" ng-if="side.isAdmin()" ng-class="{active: side.isActive('/san-pham')}"><i class="bi bi-box-seam"></i> Sản phẩm</a>
+    <a href="/combo-builder" ng-if="side.isAdmin()" ng-class="{active: side.isActive('/combo-builder')}"><i class="bi bi-flower1"></i> Combo Builder</a>
+    <a href="/danh-muc" ng-if="side.isAdmin()" ng-class="{active: side.isActive('/danh-muc')}"><i class="bi bi-tags"></i> Danh mục</a>
+  </div>
+
+  <div class="gd-admin-nav-group">
+    <h6>Khách hàng</h6>
+    <a href="/khach-hang" ng-class="{active: side.isActive('/khach-hang')}"><i class="bi bi-people"></i> Khách hàng</a>
+    <a href="/danh-gia" ng-if="side.isAdmin()" ng-class="{active: side.isActive('/danh-gia')}"><i class="bi bi-star"></i> Đánh giá</a>
+  </div>
+
+  <div class="gd-admin-nav-group" ng-if="side.isAdmin()">
+    <h6>Hệ thống</h6>
+    <a href="/khuyen-mai" ng-class="{active: side.isActive('/khuyen-mai')}"><i class="bi bi-ticket-perforated"></i> Voucher</a>
+    <a href="/su-kien" ng-class="{active: side.isActive('/su-kien')}"><i class="bi bi-megaphone"></i> Khuyến mãi</a>
+    <a href="/banner" ng-class="{active: side.isActive('/banner')}"><i class="bi bi-image"></i> Banner</a>
+    <a href="/blog" ng-class="{active: side.isActive('/blog')}"><i class="bi bi-journal-text"></i> Blog</a>
+  </div>
+</nav>

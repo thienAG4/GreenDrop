@@ -1,0 +1,26 @@
+<a class="product-card" href="/san-pham/{{ product.product_id }}">
+  <div class="gd-card" style="padding: 10px;">
+    <div class="pc-image-wrap">
+      <img ng-src="{{ product.images && product.images[0] ? product.images[0].url : 'https://placehold.co/400x400?text=No+Image' }}" alt="{{ product.name }}" onerror="this.onerror=null; this.src='https://placehold.co/400x400?text=No+Image';">
+      <span class="pc-badge" ng-if="product.category_name">{{ product.category_name }}</span>
+      <span class="pc-discount-badge" ng-if="vm.discountPercent() > 0">-{{ vm.discountPercent() }}%</span>
+      <button class="pc-wishlist" ng-class="{active: vm.isWishlisted()}" ng-click="vm.toggleWishlist($event)">
+        <i class="bi" ng-class="vm.isWishlisted() ? 'bi-heart-fill' : 'bi-heart'"></i>
+      </button>
+    </div>
+    <div class="pc-title">{{ product.name }}</div>
+    <div class="pc-rating">
+      <i class="bi bi-star-fill" ng-repeat="n in [1,2,3,4,5]" ng-if="n <= vm.round(product.avg_rating)"></i>
+      <i class="bi bi-star" ng-repeat="n in [1,2,3,4,5]" ng-if="n > vm.round(product.avg_rating)"></i>
+      <span style="color: var(--gd-text-light); font-size: 12px;">({{ product.avg_rating || 0 }})</span>
+    </div>
+    <div>
+      <span class="pc-price-current">{{ vm.discountedPrice() | gdCurrency }}</span>
+      <span class="pc-price-original" ng-if="vm.discountPercent() > 0">{{ product.price | gdCurrency }}</span>
+    </div>
+    <button class="btn-gd btn-gd-secondary btn-gd-sm mt-2 w-100" ng-if="product.stock_quantity > 0" ng-click="vm.quickAdd($event)">
+      <i class="bi bi-bag-plus"></i> Thêm vào giỏ
+    </button>
+    <span class="gd-badge gd-badge-neutral mt-2 d-inline-block" ng-if="product.stock_quantity <= 0">Hết hàng</span>
+  </div>
+</a>

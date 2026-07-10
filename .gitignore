@@ -1,0 +1,16 @@
+node_modules/
+.env
+*.log
+npm-debug.log*
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Runtime-uploaded content (backend/middleware/upload.js creates these on
+# demand). uploads/banners, uploads/images, and uploads/videos hold real
+# seeded/design assets and are intentionally NOT covered by this.
+backend/uploads/blog/*
+backend/uploads/products/*
+backend/uploads/returns/*
+backend/uploads/reviews/*

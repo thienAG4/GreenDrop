@@ -1,0 +1,21 @@
+<div ng-controller="AccountSidebarController as side">
+  <ul class="gd-account-sidebar">
+    <li><a href="/tai-khoan/thong-tin" ng-class="{active: side.isActive('/tai-khoan/thong-tin')}"><i class="bi bi-person"></i> Thông tin cá nhân</a></li>
+    <li><a href="/tai-khoan/don-hang" ng-class="{active: side.isActive('/tai-khoan/don-hang')}"><i class="bi bi-bag-check"></i> Đơn hàng của tôi</a></li>
+    <li><a href="/tai-khoan/dia-chi" ng-class="{active: side.isActive('/tai-khoan/dia-chi')}"><i class="bi bi-geo-alt"></i> Quản lý địa chỉ</a></li>
+    <li><a href="/tai-khoan/mat-khau" ng-class="{active: side.isActive('/tai-khoan/mat-khau')}"><i class="bi bi-lock"></i> Quản lý mật khẩu</a></li>
+    <li><a href="/tai-khoan/tra-hang" ng-class="{active: side.isActive('/tai-khoan/tra-hang')}"><i class="bi bi-arrow-return-left"></i> Lịch sử trả hàng</a></li>
+    <li><a href="/tai-khoan/yeu-thich" ng-class="{active: side.isActive('/tai-khoan/yeu-thich')}"><i class="bi bi-heart"></i> Danh sách yêu thích</a></li>
+    <li><a href="javascript:void(0)" ng-click="side.showLogoutConfirm = true"><i class="bi bi-box-arrow-right"></i> Đăng xuất</a></li>
+  </ul>
+
+  <div class="gd-overlay" ng-if="side.showLogoutConfirm">
+    <div class="gd-modal text-center">
+      <p>Bạn có chắc chắn muốn đăng xuất?</p>
+      <div class="d-flex gap-2 justify-content-center">
+        <button class="btn-gd btn-gd-secondary" ng-click="side.showLogoutConfirm = false">Huỷ</button>
+        <button class="btn-gd btn-gd-destructive" ng-click="side.confirmLogout()">Có, đăng xuất</button>
+      </div>
+    </div>
+  </div>
+</div>

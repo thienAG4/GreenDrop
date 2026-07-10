@@ -1,0 +1,26 @@
+<div class="gd-container gd-section-sm">
+  <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+    <h1 class="gd-h1" style="font-size: 26px;">Thiết kế đã lưu</h1>
+    <a href="/combo-builder" class="btn-gd btn-gd-secondary btn-gd-sm"><i class="bi bi-arrow-left"></i> Quay lại Builder</a>
+  </div>
+
+  <p ng-if="vm.loading" class="gd-loading-block">Đang tải thiết kế...</p>
+
+  <div class="row g-3" ng-if="!vm.loading">
+    <div class="col-md-6 col-lg-4" ng-repeat="design in vm.designs">
+      <a ng-href="/combo/{{ design.combo_id }}" class="gd-card h-100 d-flex flex-column text-reset text-decoration-none">
+        <img ng-src="{{ vm.thumbnail(design) }}" class="img-fluid rounded mb-2" style="width: 100%; aspect-ratio: 4/3; object-fit: cover;">
+        <div class="d-flex justify-content-between align-items-start mb-1">
+          <strong>{{ design.name }}</strong>
+          <span class="gd-badge gd-badge-info">{{ vm.typeLabel(design) }}</span>
+        </div>
+        <div class="text-muted mb-2" style="font-size: 13px;">{{ vm.summary(design) }}</div>
+        <div class="mt-auto d-flex justify-content-between align-items-center">
+          <strong class="pc-price-current">{{ design.total_price | gdCurrency }}</strong>
+          <span class="text-muted" style="font-size: 12px;">{{ design.created_at }}</span>
+        </div>
+      </a>
+    </div>
+  </div>
+  <p ng-if="!vm.loading && !vm.designs.length" class="text-muted">Bạn chưa lưu thiết kế nào.</p>
+</div>

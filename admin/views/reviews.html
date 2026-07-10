@@ -1,0 +1,67 @@
+<h2 class="gd-h2">Kiểm duyệt đánh giá</h2>
+<div class="gd-tabs mb-3">
+  <button class="gd-tab" ng-class="{active: vm.filter === 'pending'}" ng-click="vm.setFilter('pending')">Chờ duyệt</button>
+  <button class="gd-tab" ng-class="{active: vm.filter === 'visible'}" ng-click="vm.setFilter('visible')">Đã hiển thị</button>
+</div>
+
+<p ng-if="vm.loading" class="gd-loading-block">Đang tải...</p>
+
+<div ng-if="!vm.loading">
+  <div class="gd-card mb-2" ng-repeat="r in vm.reviews">
+    <div class="d-flex justify-content-between">
+      <div class="d-flex gap-3">
+        <img ng-if="r.product_thumbnail_url" ng-src="{{ r.product_thumbnail_url }}"
+             onerror="this.onerror=null; this.src='https://placehold.co/56x56?text=%20';"
+             class="gd-order-item-thumb" style="width:56px;height:56px;">
+        <div>
+          <div class="text-muted" style="font-size: 12px;">{{ r.product_name || 'Sản phẩm đã bị xoá' }}</div>
+          <strong>{{ r.reviewer_name }}</strong>
+          <div class="pc-rating"><i class="bi bi-star-fill" ng-repeat="n in [].constructor(r.rating) track by $index"></i></div>
+          <p class="mb-0">{{ r.content | limitTo: 140 }}{{ r.content.length > 140 ? '...' : '' }}</p>
+        </div>
+      </div>
+      <div class="text-end flex-shrink-0 d-flex flex-column gap-1" style="min-width: 110px;">
+        <button class="btn-gd btn-gd-secondary btn-gd-sm" ng-click="vm.viewDetail(r)">Xem chi tiết</button>
+        <button class="btn-gd btn-gd-success btn-gd-sm" ng-if="!r.is_visible" ng-click="vm.approve(r)">Duyệt</button>
+        <button class="btn-gd btn-gd-destructive btn-gd-sm" ng-if="r.is_visible" ng-click="vm.hide(r)">Ẩn</button>
+      </div>
+    </div>
+  </div>
+  <p ng-if="!vm.reviews.length" class="text-muted">Không có đánh giá nào.</p>
+
+  <div class="gd-pagination" ng-if="vm.totalPages() > 1">
+    <button ng-click="vm.goToPage(1)" ng-disabled="vm.meta.page === 1"><i class="bi bi-chevron-bar-left"></i></button>
+    <button ng-click="vm.goToPage(vm.meta.page - 1)" ng-disabled="vm.meta.page === 1"><i class="bi bi-chevron-left"></i></button>
+    <button ng-repeat="p in vm.pageRange()" ng-class="{active: p === vm.meta.page}" ng-click="vm.goToPage(p)">{{ p }}</button>
+    <button ng-click="vm.goToPage(vm.meta.page + 1)" ng-disabled="vm.meta.page === vm.totalPages()"><i class="bi bi-chevron-right"></i></button>
+    <button ng-click="vm.goToPage(vm.totalPages())" ng-disabled="vm.meta.page === vm.totalPages()"><i class="bi bi-chevron-bar-right"></i></button>
+  </div>
+</div>
+
+<div class="gd-overlay" ng-if="vm.selected" ng-click="vm.closeDetail()">
+  <div class="gd-modal" style="max-width: 560px; text-align: left;" ng-click="$event.stopPropagation()">
+    <h3 class="gd-h3">Chi tiết đánh giá</h3>
+    <div class="d-flex gap-3 mb-3">
+      <img ng-if="vm.selected.product_thumbnail_url" ng-src="{{ vm.selected.product_thumbnail_url }}"
+           onerror="this.onerror=null; this.src='https://placehold.co/72x72?text=%20';"
+           class="gd-order-item-thumb" style="width:72px;height:72px;">
+      <div>
+        <div class="text-muted" style="font-size: 12px;">Sản phẩm</div>
+        <strong>{{ vm.selected.product_name || 'Sản phẩm đã bị xoá' }}</strong>
+      </div>
+    </div>
+    <p class="mb-1"><strong>Người đánh giá:</strong> {{ vm.selected.reviewer_name }}</p>
+    <div class="pc-rating mb-2"><i class="bi bi-star-fill" ng-repeat="n in [].constructor(vm.selected.rating) track by $index"></i></div>
+    <p>{{ vm.selected.content }}</p>
+    <img ng-if="vm.selected.image_url" ng-src="{{ vm.selected.image_url }}"
+         onerror="this.onerror=null; this.src='https://placehold.co/200x200?text=No+Image';"
+         style="width: 100%; max-height: 260px; object-fit: cover; border-radius: var(--gd-radius);" class="mb-3">
+    <p class="text-muted" style="font-size: 12px;">Ngày gửi: {{ vm.selected.created_at | gdDate:'dd/MM/yyyy HH:mm' }}</p>
+
+    <div class="d-flex gap-2 mt-3">
+      <button class="btn-gd btn-gd-success btn-gd-sm" ng-if="!vm.selected.is_visible" ng-click="vm.approve(vm.selected)">Duyệt</button>
+      <button class="btn-gd btn-gd-destructive btn-gd-sm" ng-if="vm.selected.is_visible" ng-click="vm.hide(vm.selected)">Ẩn</button>
+      <button class="btn-gd btn-gd-secondary btn-gd-sm ms-auto" ng-click="vm.closeDetail()">Đóng</button>
+    </div>
+  </div>
+</div>

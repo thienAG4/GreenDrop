@@ -1,0 +1,57 @@
+<div class="gd-container gd-section-sm" style="max-width: 680px;">
+  <p ng-if="vm.loading" class="gd-loading-block">Đang tải...</p>
+
+  <div ng-if="!vm.loading">
+    <a href="/don-hang/{{ vm.item.order_id }}" class="btn-gd btn-gd-secondary btn-gd-sm mb-3" ng-if="vm.item"><i class="bi bi-arrow-left"></i> Quay lại đơn hàng</a>
+
+    <div class="gd-stepper">
+      <div class="step" ng-class="{active: vm.phase === 'write', done: vm.phase === 'submitted'}"><span class="dot">1</span> Chọn đơn</div>
+      <div class="sep"></div>
+      <div class="step" ng-class="{active: vm.phase === 'write', done: vm.phase === 'submitted'}"><span class="dot">2</span> Viết đánh giá</div>
+      <div class="sep"></div>
+      <div class="step" ng-class="{active: vm.phase === 'submitted'}"><span class="dot">3</span> Chờ duyệt</div>
+    </div>
+
+    <div ng-if="vm.phase === 'write'" class="gd-card">
+      <h2 class="gd-h2">Đánh giá sản phẩm</h2>
+      <p class="text-muted">{{ vm.item.item_type === 'combo' ? 'Combo tự thiết kế' : vm.item.name }} - Đơn hàng #{{ vm.item.order_id }}</p>
+
+      <label class="gd-label">Đánh giá của bạn</label>
+      <div class="mb-1" style="font-size: 28px;">
+        <i class="bi" ng-repeat="n in [1,2,3,4,5]" ng-class="n <= vm.rating ? 'bi-star-fill' : 'bi-star'" style="color: var(--gd-gold); cursor: pointer;" ng-click="vm.setRating(n)"></i>
+      </div>
+      <p class="text-muted mb-3">{{ vm.satisfactionLabel() }}</p>
+
+      <label class="gd-label">Nội dung đánh giá</label>
+      <textarea class="form-control-gd mb-3" rows="4" ng-model="vm.content" placeholder="Chia sẻ cảm nhận của bạn về sản phẩm..."></textarea>
+
+      <label class="gd-label">Hình ảnh (tuỳ chọn)</label>
+      <div class="gd-dropzone mb-2" onclick="this.querySelector('input').click()">
+        <input type="file" accept="image/*" style="display:none;" gd-file-change="vm.onFileSelected(files)">
+        <i class="bi bi-cloud-upload" style="font-size: 28px;"></i>
+        <p class="mb-0">Nhấn để tải ảnh lên</p>
+      </div>
+      <div class="gd-thumb mb-3" ng-if="vm.preview"><img ng-src="{{ vm.preview }}"></div>
+
+      <div class="form-check form-switch mb-3">
+        <input class="form-check-input" type="checkbox" ng-model="vm.showName" id="showName">
+        <label class="form-check-label" for="showName">Hiển thị tên của tôi</label>
+      </div>
+
+      <p class="gd-field-error" ng-if="vm.errorMessage">{{ vm.errorMessage }}</p>
+      <button class="btn-gd btn-gd-destructive" ng-disabled="vm.submitting" ng-click="vm.submit()">Gửi đánh giá</button>
+    </div>
+
+    <div ng-if="vm.phase === 'submitted'" class="text-center py-4">
+      <i class="bi bi-clock" style="font-size: 48px; color: var(--gd-warning);"></i>
+      <h2 class="gd-h2">Đánh giá đã được gửi!</h2>
+      <p class="text-muted">Gửi lúc {{ vm.submittedAt | date:'HH:mm dd/MM/yyyy' }}</p>
+      <div class="gd-alert gd-alert-warning mx-auto mb-3" style="max-width: 480px;">
+        <i class="bi bi-envelope"></i>
+        <div>Đánh giá của bạn đang chờ admin duyệt (thường trong 1-2 ngày) và sẽ hiển thị công khai sau khi được chấp thuận. Chúng tôi sẽ gửi email thông báo khi có kết quả.</div>
+      </div>
+      <a href="/tai-khoan/don-hang" class="btn-gd btn-gd-success">Xem đơn hàng</a>
+      <a href="/san-pham" class="btn-gd btn-gd-destructive ms-2">Khám phá thêm</a>
+    </div>
+  </div>
+</div>

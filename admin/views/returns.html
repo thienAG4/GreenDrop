@@ -1,0 +1,52 @@
+<h2 class="gd-h2">Trả hàng &amp; Hoàn tiền</h2>
+<div class="gd-tabs mb-3">
+  <button class="gd-tab" ng-class="{active: vm.tab === 'requests'}" ng-click="vm.setTab('requests')">Yêu cầu trả hàng</button>
+  <button class="gd-tab" ng-class="{active: vm.tab === 'refunds'}" ng-click="vm.setTab('refunds')">Hoàn tiền</button>
+</div>
+
+<p ng-if="vm.loading" class="gd-loading-block">Đang tải...</p>
+
+<div class="gd-tab-panel" ng-if="vm.tab === 'requests' && !vm.loading">
+  <select class="form-select-gd mb-3" style="width: auto;" ng-model="vm.statusFilter" ng-change="vm.reload()">
+    <option value="">Tất cả</option>
+    <option value="pending">Chờ duyệt</option>
+    <option value="approved">Đã duyệt</option>
+    <option value="rejected">Đã từ chối</option>
+    <option value="completed">Đã nhận hàng</option>
+  </select>
+
+  <div class="gd-card mb-2" ng-repeat="r in vm.returns">
+    <div class="d-flex justify-content-between">
+      <div>
+        <strong>Yêu cầu #{{ r.return_id }}</strong> - {{ r.customer_name }}
+        <span class="gd-badge gd-badge-error ms-2" ng-if="r.customer_flagged">Tài khoản bị gắn cờ</span>
+        <div class="text-muted" style="font-size: 13px;">{{ r.reason_type }} - {{ r.description }}</div>
+        <div class="d-flex gap-2 mt-1">
+          <img ng-repeat="item in r.items" ng-if="item.photo_url" ng-src="{{ item.photo_url }}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px;" onerror="this.onerror=null; this.src='https://placehold.co/50x50?text=No+Image';">
+        </div>
+      </div>
+      <div class="text-end">
+        <span class="gd-badge d-block mb-2" ng-class="vm.returnStatusBadgeClass(r.status)">{{ vm.returnStatusLabel(r.status) }}</span>
+        <button class="btn-gd btn-gd-success btn-gd-sm" ng-if="r.status === 'pending'" ng-click="vm.approve(r)">Duyệt</button>
+        <button class="btn-gd btn-gd-destructive btn-gd-sm ms-1" ng-if="r.status === 'pending'" ng-click="vm.reject(r)">Từ chối</button>
+        <button class="btn-gd btn-gd-primary btn-gd-sm" ng-if="r.status === 'approved'" ng-click="vm.itemReceived(r)">Đã nhận hàng</button>
+      </div>
+    </div>
+  </div>
+  <p ng-if="!vm.returns.length" class="text-muted">Không có yêu cầu nào.</p>
+</div>
+
+<div class="gd-tab-panel" ng-if="vm.tab === 'refunds' && !vm.loading">
+  <table class="table align-middle gd-card">
+    <thead><tr><th>ID</th><th>Khách hàng</th><th>Số tiền</th><th>Trạng thái</th><th></th></tr></thead>
+    <tbody>
+      <tr ng-repeat="rf in vm.refunds">
+        <td>#{{ rf.refund_id }}</td>
+        <td>{{ rf.customer_name }}</td>
+        <td>{{ rf.amount | gdCurrency }}</td>
+        <td><span class="gd-badge" ng-class="rf.status === 'completed' ? 'gd-badge-success' : (rf.status === 'failed' ? 'gd-badge-error' : 'gd-badge-warning')">{{ vm.refundStatusLabel(rf.status) }}</span></td>
+        <td class="text-end"><button class="btn-gd btn-gd-secondary btn-gd-sm" ng-if="rf.status === 'failed'" ng-click="vm.retryRefund(rf)">Thử lại</button></td>
+      </tr>
+    </tbody>
+  </table>
+</div>

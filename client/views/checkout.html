@@ -1,0 +1,116 @@
+<div class="gd-container gd-section-sm">
+  <h1 class="gd-h1" style="font-size: 26px;">Thanh toán</h1>
+  <p ng-if="vm.loading" class="gd-loading-block">Đang tải...</p>
+
+  <div class="row g-4" ng-if="!vm.loading">
+    <div class="col-lg-8">
+      <div class="gd-card mb-3">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <h3 class="gd-h3 mb-0">Thông tin nhận hàng</h3>
+          <a href="javascript:void(0)" ng-if="vm.isLoggedIn && vm.addresses.length" ng-click="vm.showAddressModal = true">Thay đổi</a>
+        </div>
+
+        <div ng-if="!vm.isLoggedIn">
+          <div class="row g-2">
+            <div class="col-md-6"><input class="form-control-gd" placeholder="Họ và tên" ng-model="vm.guest.full_name"></div>
+            <div class="col-md-6"><input class="form-control-gd" placeholder="Số điện thoại" ng-model="vm.guest.phone"></div>
+            <div class="col-md-6"><input class="form-control-gd" placeholder="Email (tuỳ chọn)" ng-model="vm.guest.email"></div>
+          </div>
+        </div>
+
+        <div ng-if="vm.isLoggedIn && !vm.usingNewAddress && vm.selectedAddressId">
+          <p class="mb-0" ng-repeat="a in vm.addresses" ng-if="a.address_id === vm.selectedAddressId">
+            {{ a.address_line }}, {{ a.district }}, {{ a.city }}
+            <span class="gd-badge gd-badge-success" ng-if="a.is_default">Mặc định</span>
+          </p>
+        </div>
+
+        <div ng-if="vm.usingNewAddress" class="row g-2 mt-1">
+          <div class="col-md-4"><input class="form-control-gd" placeholder="Địa chỉ cụ thể" ng-model="vm.newAddress.address_line"></div>
+          <div class="col-md-4"><input class="form-control-gd" placeholder="Quận/Huyện" ng-model="vm.newAddress.district"></div>
+          <div class="col-md-4"><input class="form-control-gd" placeholder="Thành phố" ng-model="vm.newAddress.city"></div>
+        </div>
+      </div>
+
+      <div class="gd-card mb-3">
+        <h3 class="gd-h3">Phương thức vận chuyển</h3>
+        <div class="d-flex justify-content-between align-items-center">
+          <span><input type="radio" checked disabled> Giao hàng tiêu chuẩn (3-5 ngày)</span>
+          <strong>{{ vm.SHIPPING_FEE | gdCurrency }}</strong>
+        </div>
+      </div>
+
+      <div class="gd-card mb-3" ng-if="vm.voucherResult">
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            <h3 class="gd-h3 mb-1">Mã giảm giá đã áp dụng</h3>
+            <p class="gd-field-ok mb-0">{{ vm.voucherCode }} - Giảm {{ vm.voucherResult.discount_amount | gdCurrency }}</p>
+          </div>
+          <a href="javascript:void(0)" ng-click="vm.backToCart()" style="font-size: 13px;">Thay đổi</a>
+        </div>
+      </div>
+
+      <div class="gd-card">
+        <h3 class="gd-h3">Phương thức thanh toán</h3>
+        <div class="form-check mb-2" ng-repeat="pm in vm.paymentMethods">
+          <input class="form-check-input" type="radio" ng-model="vm.paymentMethod" value="{{ pm.value }}" id="pm{{$index}}">
+          <label class="form-check-label" for="pm{{$index}}"><i class="bi {{ pm.icon }}"></i> {{ pm.label }}</label>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-4">
+      <div class="gd-card">
+        <h3 class="gd-h3">Đơn hàng</h3>
+        <div class="d-flex justify-content-between mb-2"><span>Tạm tính</span><span>{{ vm.cart.subtotal | gdCurrency }}</span></div>
+        <div class="d-flex justify-content-between mb-2"><span>Phí vận chuyển</span><span>{{ vm.SHIPPING_FEE | gdCurrency }}</span></div>
+        <div class="d-flex justify-content-between mb-2" ng-if="vm.voucherResult"><span>Giảm giá</span><span>-{{ vm.voucherResult.discount_amount | gdCurrency }}</span></div>
+        <hr>
+        <div class="d-flex justify-content-between mb-3"><strong>Tổng cộng</strong><strong class="pc-price-current" style="font-size: 20px;">{{ vm.total() | gdCurrency }}</strong></div>
+        <p class="gd-field-error" ng-if="vm.errorMessage">{{ vm.errorMessage }}</p>
+        <button class="btn-gd btn-gd-primary w-100 mb-2" ng-click="vm.openConfirm()" ng-disabled="vm.submitting">Tiếp tục</button>
+        <button class="btn-gd btn-gd-secondary w-100" ng-click="vm.backToCart()">Quay lại giỏ hàng</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Address selection modal -->
+<div class="gd-overlay" ng-if="vm.showAddressModal">
+  <div class="gd-modal" style="max-width: 560px;">
+    <h3 class="gd-h3">Chọn địa chỉ giao hàng</h3>
+    <div class="form-check gd-card mb-2" ng-repeat="a in vm.addresses">
+      <input class="form-check-input" type="radio" ng-checked="vm.selectedAddressId === a.address_id" ng-click="vm.selectAddress(a.address_id)">
+      <label class="form-check-label">
+        {{ a.address_line }}, {{ a.district }}, {{ a.city }}
+        <span class="gd-badge gd-badge-success" ng-if="a.is_default">Mặc định</span>
+      </label>
+    </div>
+    <button class="btn-gd btn-gd-secondary w-100 mb-3" ng-click="vm.addNewAddress()">+ Thêm địa chỉ mới</button>
+    <div class="d-flex gap-2 justify-content-end">
+      <button class="btn-gd btn-gd-secondary" ng-click="vm.showAddressModal = false">Huỷ</button>
+    </div>
+  </div>
+</div>
+
+<!-- Confirmation modal -->
+<div class="gd-overlay" ng-if="vm.showConfirmModal">
+  <div class="gd-modal text-center">
+    <div class="gd-modal-icon info"><i class="bi bi-exclamation-lg"></i></div>
+    <p>Quý khách vui lòng xác nhận đơn hàng!</p>
+    <div class="d-flex gap-2 justify-content-center">
+      <button class="btn-gd btn-gd-secondary" ng-click="vm.showConfirmModal = false">Hủy</button>
+      <button class="btn-gd btn-gd-destructive" ng-click="vm.confirmOrder()">Xác nhận</button>
+    </div>
+  </div>
+</div>
+
+<!-- Stock-out error modal -->
+<div class="gd-overlay" ng-if="vm.showStockOutModal">
+  <div class="gd-modal text-center">
+    <div class="gd-modal-icon error"><i class="bi bi-exclamation-triangle"></i></div>
+    <p>Lỗi xảy ra trong quá trình thanh toán</p>
+    <p class="text-muted">Quý khách vui lòng cập nhật lại giỏ hàng.</p>
+    <p class="text-muted" style="font-size: 13px;">Trở về trang giỏ hàng trong 3s...</p>
+  </div>
+</div>

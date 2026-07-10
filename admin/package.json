@@ -1,0 +1,13 @@
+{
+  "name": "greendrop-admin",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Static AngularJS admin panel for GreenDrop — standalone from client/, own login, own port. No build step, just needs a real HTTP server (ngRoute templateUrl partials are blocked under file://).",
+  "scripts": {
+    "start": "http-server . -p 8081 -c-1 -P http://localhost:8081?",
+    "dev": "http-server . -p 8081 -c-1 -P http://localhost:8081?"
+  },
+  "devDependencies": {
+    "http-server": "^14.1.1"
+  }
+}

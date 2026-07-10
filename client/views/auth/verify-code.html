@@ -1,0 +1,20 @@
+<div class="gd-auth-layout">
+  <div class="gd-auth-image"></div>
+  <div class="gd-auth-form-wrap">
+    <div class="gd-auth-card">
+      <h1>MÃ XÁC THỰC</h1>
+      <p class="text-muted text-center mb-3" style="font-size: 14px;">Nhập mã 6 chữ số đã được gửi đến {{ vm.email }}</p>
+      <form ng-submit="vm.submit()">
+        <div class="gd-verify-digits">
+          <input ng-repeat="d in vm.digits track by $index" ng-model="vm.digits[$index]" maxlength="1" ng-change="vm.onDigitInput($index)" ng-keyup="$event.keyCode===8 && vm.onDigitInput($index)">
+        </div>
+        <p class="gd-field-error text-center" ng-if="vm.errorMessage">{{ vm.errorMessage }}</p>
+        <button type="submit" class="btn-gd btn-gd-primary w-100" ng-disabled="vm.submitting">Xác nhận</button>
+      </form>
+      <div class="gd-auth-footer-link">
+        <a href="javascript:void(0)" ng-click="vm.resend()"><strong>Gửi lại</strong></a>
+        <span ng-if="vm.resent" class="gd-field-ok d-block">Đã gửi lại mã xác thực!</span>
+      </div>
+    </div>
+  </div>
+</div>

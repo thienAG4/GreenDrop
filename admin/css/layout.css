@@ -1,0 +1,123 @@
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; height: 100%; }
+body {
+  font-family: var(--gd-font);
+  color: var(--gd-text);
+  background: var(--gd-bg-page);
+  font-size: 15px;
+  line-height: 1.5;
+}
+a { color: var(--gd-forest); }
+h1, h2, h3 { font-weight: 800; color: var(--gd-text); }
+h1.gd-h1 { font-size: 28px; }
+h2.gd-h2 { font-size: 22px; }
+h3.gd-h3 { font-size: 17px; }
+
+.gd-container { max-width: var(--gd-container-max); margin: 0 auto; padding: 0 20px; }
+.gd-section-sm { padding: 24px 0; }
+.gd-breadcrumb { font-size: 13px; color: var(--gd-text-light); margin: 0 0 16px; }
+.gd-breadcrumb a { color: var(--gd-text-light); text-decoration: none; }
+.gd-breadcrumb .current { color: var(--gd-forest); font-weight: 700; }
+
+.gd-loading-block { text-align: center; padding: 60px 0; color: var(--gd-text-light); }
+.gd-loading-wrap { position: relative; min-height: 120px; }
+.gd-loading-overlay { position: absolute; inset: 0; z-index: 2; display: flex; align-items: center; justify-content: center; }
+
+[ng-view].ng-enter { transition: opacity 0.2s ease-in; opacity: 0; }
+[ng-view].ng-enter.ng-enter-active { opacity: 1; }
+
+/* ============ Admin shell: fixed sidebar + topbar + scrolling content ============ */
+.gd-admin-shell {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  grid-template-rows: 76px 1fr;
+  grid-template-areas: "sidebar topbar" "sidebar main";
+  min-height: 100vh;
+}
+/* index.html wraps the sidebar/topbar partials in ng-include host divs, so
+   those divs - not the .gd-admin-sidebar/.gd-admin-topbar elements nested
+   inside them - are the actual grid items; grid-area only takes effect on a
+   direct child of the grid container. Without this, the sidebar/topbar divs
+   fall back to implicit auto-placement instead of the named areas, and the
+   sidebar ends up confined to the 76px top row (only as tall as its own
+   content lets it overflow) instead of spanning the full column height. */
+.gd-admin-sidebar-slot { grid-area: sidebar; }
+.gd-admin-topbar-slot { grid-area: topbar; }
+.gd-admin-sidebar {
+  height: 100%;
+  background: var(--gd-forest-dark);
+  color: var(--gd-text-offwhite);
+  padding: 20px 12px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+.gd-admin-sidebar .gd-logo {
+  color: var(--gd-white); font-weight: 800; font-size: 20px; text-decoration: none;
+  display: flex; align-items: center; gap: 10px; padding: 0 8px 20px;
+  border-bottom: 1px solid rgba(255,255,255,0.08); margin-bottom: 16px;
+}
+.gd-admin-sidebar .gd-logo i { font-size: 22px; color: var(--gd-green-btn); }
+.gd-admin-nav-group { margin-bottom: 14px; }
+.gd-admin-nav-group h6 {
+  color: rgba(255,255,255,0.4); font-size: 11px; text-transform: uppercase; font-weight: 700;
+  letter-spacing: 0.08em; padding: 0 12px; margin-bottom: 8px;
+}
+.gd-admin-nav-group a {
+  display: flex; align-items: center; gap: 12px; padding: 10px 12px; margin-bottom: 2px;
+  color: var(--gd-text-offwhite); text-decoration: none; font-weight: 600; font-size: 14px;
+  border-radius: var(--gd-radius-pill); transition: background 0.15s ease, color 0.15s ease;
+}
+.gd-admin-nav-group a i { font-size: 16px; width: 20px; text-align: center; color: rgba(255,255,255,0.55); transition: color 0.15s ease; }
+.gd-admin-nav-group a.active { background: var(--gd-green-btn); color: var(--gd-forest-dark); font-weight: 700; }
+.gd-admin-nav-group a.active i { color: var(--gd-forest-dark); }
+.gd-admin-nav-group a:hover:not(.active) { background: rgba(255,255,255,0.08); color: var(--gd-white); }
+.gd-admin-nav-group a:hover:not(.active) i { color: var(--gd-white); }
+
+.gd-admin-topbar {
+  height: 100%; box-sizing: border-box; background: var(--gd-white); border-bottom: 1px solid var(--gd-border);
+  display: flex; align-items: center; justify-content: space-between; padding: 16px 28px;
+}
+.gd-admin-topbar .gd-topbar-search {
+  display: flex; align-items: center; gap: 8px; background: var(--gd-bg-page); border: 1px solid var(--gd-border);
+  border-radius: var(--gd-radius-pill); padding: 9px 16px; color: var(--gd-text-light); width: 320px;
+}
+.gd-admin-topbar .gd-topbar-search input { border: none; background: none; outline: none; font-size: 14px; width: 100%; }
+.gd-admin-topbar .gd-topbar-user { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 14px; }
+
+.gd-admin-main { grid-area: main; padding: 24px; overflow-y: auto; }
+
+@media (max-width: 900px) {
+  .gd-admin-shell { grid-template-columns: 1fr; grid-template-areas: "topbar" "main"; }
+  .gd-admin-sidebar-slot { display: none; }
+}
+
+/* Data tables (orders/products/customers/etc.) */
+.gd-admin-table-wrap { background: var(--gd-white); border-radius: var(--gd-radius); box-shadow: var(--gd-shadow-card); overflow: hidden; }
+.gd-admin-table-wrap table { margin-bottom: 0; }
+.gd-admin-table-wrap thead th { border-top: none; font-size: 12px; text-transform: uppercase; color: var(--gd-text-muted); font-weight: 700; }
+
+/* Metric card row (dashboard) */
+.gd-metric-card { background: var(--gd-white); border-radius: var(--gd-radius); box-shadow: var(--gd-shadow-card); padding: 20px; }
+.gd-metric-card .value { font-size: 24px; font-weight: 800; line-height: 1.2; }
+.gd-metric-card .label { color: var(--gd-text-light); font-size: 13px; }
+.gd-metric-icon {
+  width: 46px; height: 46px; border-radius: 50%; display: flex; align-items: center;
+  justify-content: center; font-size: 20px; flex-shrink: 0;
+}
+.gd-metric-icon-green { background: #e3f3e8; color: var(--gd-forest); }
+.gd-metric-icon-blue { background: #e3edf9; color: #2f6fb0; }
+.gd-metric-icon-purple { background: #ede3f9; color: #7b3fb0; }
+.gd-metric-icon-orange { background: #fbeade; color: #c67a2c; }
+.gd-metric-icon-red { background: #fbe3e3; color: #c04040; }
+
+/* Standalone login page (own page, not split with an image panel like the
+   customer app's auth pages - this is a smaller, single-purpose app) */
+.gd-admin-login-layout {
+  min-height: 100vh; display: flex; align-items: center; justify-content: center;
+  background: var(--gd-bg-pale-green);
+}
+.gd-admin-login-card { background: var(--gd-white); border-radius: var(--gd-radius); box-shadow: var(--gd-shadow-card); padding: 40px; max-width: 400px; width: 100%; }
+.gd-admin-login-card h1 { font-size: 22px; font-weight: 800; text-align: center; margin-bottom: 8px; }
+.gd-admin-login-card .subtitle { text-align: center; color: var(--gd-text-light); font-size: 14px; margin-bottom: 24px; }
+.gd-admin-login-card .gd-field { margin-bottom: 16px; }

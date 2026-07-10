@@ -1,0 +1,28 @@
+<h2 class="gd-h2">Quản lý danh mục</h2>
+<div class="gd-card mb-3">
+  <div class="d-flex gap-2">
+    <input class="form-control-gd" ng-model="vm.newName" placeholder="Tên danh mục mới" ng-keydown="$event.key === 'Enter' && vm.add()">
+    <button class="btn-gd btn-gd-primary" ng-disabled="!vm.newName || !vm.newName.trim()" ng-click="vm.add()">Thêm</button>
+  </div>
+  <p class="gd-field-error mt-2 mb-0" ng-if="vm.errorMessage">{{ vm.errorMessage }}</p>
+</div>
+
+<div class="gd-admin-table-wrap">
+  <table class="table align-middle">
+    <thead><tr><th>Tên</th><th>Số sản phẩm</th><th></th></tr></thead>
+    <tbody>
+      <tr ng-repeat="cat in vm.categories">
+        <td>
+          <span ng-if="vm.editingId !== cat.category_id">{{ cat.name }}</span>
+          <input ng-if="vm.editingId === cat.category_id" class="form-control-gd" ng-model="vm.editingName">
+        </td>
+        <td>{{ cat.product_count }}</td>
+        <td class="text-end">
+          <button class="btn-gd btn-gd-secondary btn-gd-sm" ng-if="vm.editingId !== cat.category_id" ng-click="vm.startEdit(cat)">Sửa</button>
+          <button class="btn-gd btn-gd-primary btn-gd-sm" ng-if="vm.editingId === cat.category_id" ng-click="vm.saveEdit()">Lưu</button>
+          <button class="btn-gd btn-gd-destructive btn-gd-sm ms-1" ng-click="vm.remove(cat)">Xoá</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

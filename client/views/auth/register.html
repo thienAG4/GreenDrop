@@ -1,0 +1,37 @@
+<div class="gd-auth-layout">
+  <div class="gd-auth-image"></div>
+  <div class="gd-auth-form-wrap">
+    <div class="gd-auth-card">
+      <h1>ĐĂNG KÝ</h1>
+      <form ng-submit="vm.submit()">
+        <div class="gd-field">
+          <label class="gd-label">Họ và tên</label>
+          <input class="form-control-gd" ng-model="vm.form.full_name" required>
+        </div>
+        <div class="gd-field">
+          <label class="gd-label">Số điện thoại</label>
+          <input class="form-control-gd" ng-model="vm.form.phone" required>
+          <p class="gd-field-error" ng-if="vm.phoneInvalid()">Số điện thoại không đúng định dạng</p>
+        </div>
+        <div class="gd-field">
+          <label class="gd-label">Email</label>
+          <input class="form-control-gd" ng-model="vm.form.email" required>
+          <p class="gd-field-error" ng-if="vm.emailInvalid()">Email không hợp lệ</p>
+        </div>
+        <div class="gd-field">
+          <label class="gd-label">Mật khẩu</label>
+          <input ng-attr-type="{{ vm.showPassword ? 'text' : 'password' }}" class="form-control-gd" ng-model="vm.form.password" required>
+          <i class="bi password-toggle" ng-class="vm.showPassword ? 'bi-eye-slash' : 'bi-eye'" ng-click="vm.togglePassword()"></i>
+        </div>
+        <div class="gd-field">
+          <label class="gd-label">Xác nhận lại mật khẩu</label>
+          <input type="password" class="form-control-gd" ng-model="vm.form.confirm_password" required>
+          <p class="gd-field-error" ng-if="vm.passwordMismatch()">Mật khẩu xác nhận không khớp</p>
+        </div>
+        <p class="gd-field-error" ng-if="vm.errorMessage">{{ vm.errorMessage }}</p>
+        <button type="submit" class="btn-gd btn-gd-primary w-100" ng-disabled="!vm.canSubmit() || vm.submitting">Đăng ký</button>
+      </form>
+      <div class="gd-auth-footer-link">Bạn đã có tài khoản? <a href="/dang-nhap">Về trang đăng nhập tại đây</a></div>
+    </div>
+  </div>
+</div>

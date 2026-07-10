@@ -1,0 +1,10 @@
+<section class="gd-section-sm">
+  <div class="gd-container">
+    <h2 class="gd-h2 text-center mb-4">Vì sao nên chọn GreenDrop?</h2>
+    <div class="row g-3">
+      <div class="col-md-3 col-6" ng-repeat="vp in vm.items">
+        <gd-value-prop-card image="vp.image" title="{{ vp.title }}" description="{{ vp.description }}" cta-text="{{ vp.cta }}"></gd-value-prop-card>
+      </div>
+    </div>
+  </div>
+</section>

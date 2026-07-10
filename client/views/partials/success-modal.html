@@ -1,0 +1,7 @@
+<div class="gd-overlay" ng-if="vm.visible" ng-click="vm.close()">
+  <div class="gd-modal text-center" ng-click="$event.stopPropagation()">
+    <div class="gd-modal-icon" ng-class="vm.type"><i class="bi" ng-class="vm.icon"></i></div>
+    <p class="mb-3">{{ vm.message }}</p>
+    <button class="btn-gd btn-gd-primary" ng-click="vm.close()">Đóng</button>
+  </div>
+</div>

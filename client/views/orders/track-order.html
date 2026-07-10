@@ -1,0 +1,23 @@
+<section class="gd-hero-search">
+  <div class="gd-container" style="max-width: 560px;">
+    <h1 class="gd-h1">Hành trình đơn hàng</h1>
+    <p style="color: var(--gd-text-muted);">Nhập mã đơn hàng và số điện thoại đã dùng khi đặt hàng để theo dõi tình trạng đơn hàng của bạn.</p>
+
+    <form ng-submit="vm.submit()" class="gd-card text-start mt-3">
+      <div class="mb-3">
+        <label class="gd-label">Mã đơn hàng</label>
+        <input class="form-control-gd" ng-model="vm.form.order_id" placeholder="VD: 12">
+      </div>
+      <div class="mb-3">
+        <label class="gd-label">Số điện thoại</label>
+        <input class="form-control-gd" ng-model="vm.form.phone" placeholder="Số điện thoại đã dùng khi đặt hàng">
+      </div>
+      <p class="gd-field-error" ng-if="vm.errorMessage">{{ vm.errorMessage }}</p>
+      <button type="submit" class="btn-gd btn-gd-primary btn-gd-pill w-100" ng-disabled="vm.submitting">Theo dõi đơn hàng</button>
+    </form>
+  </div>
+</section>
+
+<gd-recently-viewed></gd-recently-viewed>
+
+<gd-app-promo></gd-app-promo>

@@ -1,0 +1,15 @@
+<div class="gd-testimonial" ng-if="vm.current()">
+  <div class="gd-testimonial-quote-mark"><i class="bi bi-quote"></i></div>
+  <p class="gd-testimonial-text">{{ vm.current().quote }}</p>
+  <div class="gd-testimonial-author">
+    <span class="gd-avatar-initials" ng-style="{'background-color': vm.avatarColor()}">{{ vm.initials(vm.current().name) }}</span>
+    <div>
+      <div class="gd-testimonial-name">{{ vm.current().name }}</div>
+      <div class="gd-testimonial-role">{{ vm.current().role }}</div>
+    </div>
+  </div>
+  <div class="gd-testimonial-nav" ng-if="testimonials.length > 1">
+    <button ng-click="vm.prev()" aria-label="Previous"><i class="bi bi-chevron-left"></i></button>
+    <button ng-click="vm.next()" aria-label="Next"><i class="bi bi-chevron-right"></i></button>
+  </div>
+</div>

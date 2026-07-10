@@ -1,0 +1,45 @@
+<div class="gd-container gd-section-sm">
+  <div class="gd-layout-sidebar">
+    <div ng-include="'views/partials/account-sidebar.html'"></div>
+
+    <div>
+      <h2 class="gd-h2">Danh sách yêu thích</h2>
+      <p class="text-muted" style="font-size: 13px;">Danh sách này được lưu trên trình duyệt của bạn.</p>
+
+      <div class="gd-card gd-wishlist-card" ng-if="vm.items.length">
+        <table class="table align-middle gd-wishlist-table">
+          <thead>
+            <tr><th>Sản phẩm</th><th>Ngày thêm</th><th>Tình trạng</th><th class="text-end">Thao tác</th></tr>
+          </thead>
+          <tbody>
+            <tr ng-repeat="item in vm.items">
+              <td>
+                <div class="d-flex align-items-center gap-3">
+                  <img ng-src="{{ item.image || 'https://placehold.co/80x80' }}" class="gd-wishlist-thumb">
+                  <div>
+                    <div class="gd-wishlist-brand">{{ vm.isCombo(item) ? 'Combo tự thiết kế' : 'GreenDrop' }}</div>
+                    <a ng-href="{{ vm.itemLink(item) }}">{{ item.name }}</a>
+                    <div class="pc-price-current" style="font-size: 15px;">{{ item.price | gdCurrency }}</div>
+                  </div>
+                </div>
+              </td>
+              <td style="font-size: 13px;">{{ item.added_at | date:'dd/MM/yyyy' }}</td>
+              <td><span style="color: var(--gd-success); font-size: 13px;">{{ vm.isAvailable(item) ? 'Còn hàng' : 'Hết hàng' }}</span></td>
+              <td class="text-end">
+                <div class="d-flex gap-2 justify-content-end">
+                  <button class="btn-gd btn-gd-success btn-gd-sm gd-wishlist-action-btn" ng-disabled="!vm.isAvailable(item)" ng-click="vm.addToCart(item)">Thêm vào giỏ hàng</button>
+                  <button class="btn-gd btn-gd-outline-error btn-gd-sm gd-wishlist-action-btn" ng-click="vm.remove(item)">Bỏ thích</button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="d-flex justify-content-between align-items-center mt-2">
+          <button class="btn-gd btn-gd-sm gd-wishlist-add-all" ng-click="vm.addAllToCart()">Thêm tất cả vào giỏ hàng</button>
+          <a href="javascript:void(0)" ng-click="vm.clearAll()" style="color: var(--gd-forest); font-size: 13px; font-weight: 700;">Xoá danh sách</a>
+        </div>
+      </div>
+      <p ng-if="!vm.items.length" class="text-muted">Danh sách yêu thích của bạn đang trống.</p>
+    </div>
+  </div>
+</div>

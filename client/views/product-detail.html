@@ -1,0 +1,136 @@
+<div class="gd-container" ng-if="vm.loading"><p class="gd-loading-block">Đang tải sản phẩm...</p></div>
+
+<div class="gd-container" ng-if="!vm.loading && vm.product">
+  <div class="gd-breadcrumb">
+    <a href="/">Trang chủ</a> / <a href="/san-pham?category_id={{ vm.product.category_id }}">{{ vm.product.category_name }}</a> / <span class="current">{{ vm.product.name }}</span>
+  </div>
+
+  <div class="row g-4">
+    <div class="col-md-6">
+      <div class="pc-image-gallery-bg mb-2">
+        <div class="pc-image-wrap" style="border-radius: var(--gd-radius); overflow: hidden;">
+          <img ng-src="{{ vm.activeImage }}" style="width: 100%; height: 100%; object-fit: cover;" alt="{{ vm.product.name }}" onerror="this.onerror=null; this.src='https://placehold.co/600x600?text=No+Image';">
+        </div>
+      </div>
+      <div class="d-flex gap-2">
+        <div ng-repeat="img in vm.product.images" style="width: 70px; height: 70px; border-radius: var(--gd-radius); overflow: hidden; cursor: pointer; border: 2px solid transparent;" ng-class="{'border-success': vm.activeImage === img.url}" ng-click="vm.setImage(img.url)">
+          <img ng-src="{{ img.url }}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.onerror=null; this.src='https://placehold.co/70x70?text=%20';">
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <div class="text-muted mb-1" style="font-size: 13px;">{{ vm.product.category_name }}</div>
+
+      <div class="d-flex align-items-center gap-2 mb-2 flex-wrap">
+        <h1 class="gd-h1 mb-0" style="font-size: 26px;">{{ vm.product.name }}</h1>
+        <span class="gd-badge gd-badge-success" ng-if="vm.product.stock_quantity > 0">Còn hàng</span>
+        <span class="gd-badge gd-badge-error" ng-if="vm.product.stock_quantity <= 0">Hết hàng</span>
+      </div>
+
+      <div class="pc-rating mb-2">
+        <i class="bi bi-star-fill" ng-repeat="n in [1,2,3,4,5]" ng-if="n <= vm.round(vm.product.avg_rating)"></i>
+        <i class="bi bi-star" ng-repeat="n in [1,2,3,4,5]" ng-if="n > vm.round(vm.product.avg_rating)"></i>
+        <span style="color: var(--gd-text-light);">{{ vm.product.avg_rating || 0 }} ({{ vm.product.reviews.length }} Review)</span>
+      </div>
+
+      <div class="mb-3 d-flex align-items-center gap-2 flex-wrap">
+        <span class="pc-discount-badge" style="position: static;" ng-if="vm.product.active_discount_percent > 0">-{{ vm.product.active_discount_percent }}%</span>
+        <span class="pc-price-current" style="font-size: 24px;">{{ vm.discountedPrice() | gdCurrency }}</span>
+        <span class="pc-price-original" ng-if="vm.product.active_discount_percent > 0">{{ vm.product.price | gdCurrency }}</span>
+      </div>
+
+      <p style="color: var(--gd-text-muted);">{{ vm.product.description }}</p>
+
+      <div class="mb-3" ng-if="vm.attributeGroups.length">
+        <div class="mb-2" ng-repeat="group in vm.attributeGroups">
+          <div class="gd-label mb-1" style="text-transform: capitalize;">{{ group.type }}</div>
+          <div class="d-flex gap-2 flex-wrap">
+            <button type="button"
+                    ng-repeat="attr in group.values"
+                    ng-click="vm.selectAttribute(group.type, attr)"
+                    ng-class="[group.shape === 'circle' ? 'pc-attr-circle' : 'pc-attr-pill', {active: vm.selectedAttribute[group.type] === attr}]">
+              {{ attr.value }}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <div class="gd-label mb-1">Số lượng</div>
+        <div class="gd-qty-stepper">
+          <button ng-click="vm.changeQty(-1)" ng-disabled="vm.quantity <= 1">-</button>
+          <span>{{ vm.quantity }}</span>
+          <button ng-click="vm.changeQty(1)" ng-disabled="vm.quantity >= vm.product.stock_quantity">+</button>
+        </div>
+      </div>
+
+      <div class="d-flex gap-2 flex-wrap">
+        <button class="btn-gd btn-gd-primary" ng-disabled="vm.product.stock_quantity <= 0" ng-click="vm.addToCart()"><i class="bi bi-bag-plus"></i> Thêm vào giỏ</button>
+        <button class="btn-gd btn-gd-accent" ng-disabled="vm.product.stock_quantity <= 0" ng-click="vm.buyNow()">Mua ngay</button>
+        <button class="btn-gd btn-gd-secondary" ng-click="vm.toggleWishlist()">
+          <i class="bi" ng-class="vm.isWishlisted() ? 'bi-heart-fill' : 'bi-heart'"></i>
+        </button>
+      </div>
+      <p class="gd-field-ok" ng-if="vm.addedMessage">{{ vm.addedMessage }}</p>
+    </div>
+  </div>
+
+  <div class="gd-section-sm">
+    <div class="gd-tabs mb-3">
+      <button class="gd-tab" ng-class="{active: vm.activeTab === 'description'}" ng-click="vm.setTab('description')">Mô tả</button>
+      <button class="gd-tab" ng-class="{active: vm.activeTab === 'more'}" ng-click="vm.setTab('more')">Thông tin thêm</button>
+    </div>
+    <div class="gd-tab-panel" ng-if="vm.activeTab === 'description'">
+      <p>{{ vm.product.description }}</p>
+      <ul>
+        <li ng-repeat="faq in vm.product.faqs"><strong>{{ faq.question }}</strong> — {{ faq.answer }}</li>
+      </ul>
+    </div>
+    <div class="gd-tab-panel" ng-if="vm.activeTab === 'more'">
+      <table class="table">
+        <tbody>
+          <tr ng-repeat="attr in vm.product.attributes">
+            <td style="width: 200px; font-weight: 700; text-transform: capitalize;">{{ attr.type }}</td>
+            <td>{{ attr.value }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="gd-section-sm" ng-if="vm.product.related_products.length">
+    <h2 class="gd-h2 mb-3">Sản phẩm liên quan</h2>
+    <div class="gd-product-grid">
+      <gd-product-card ng-repeat="p in vm.product.related_products" product="p"></gd-product-card>
+    </div>
+  </div>
+
+  <div class="gd-section-sm">
+    <h2 class="gd-h2 mb-3">Đánh giá khách hàng</h2>
+    <div class="d-flex gap-2 mb-3 flex-wrap">
+      <span class="gd-chip" ng-class="{active: !vm.reviewFilter}" ng-click="vm.reviewFilter = null" style="cursor:pointer;">Tất cả</span>
+      <span class="gd-chip" ng-repeat="n in [5,4,3,2,1]" ng-click="vm.reviewFilter = n" style="cursor:pointer;">{{ n }} Sao</span>
+      <span class="gd-chip" ng-click="vm.reviewFilter = 'with-images'" style="cursor:pointer;">Có hình ảnh</span>
+    </div>
+    <div class="gd-card mb-2" ng-repeat="review in vm.filteredReviews()">
+      <div class="d-flex justify-content-between">
+        <strong>{{ review.reviewer_name }}</strong>
+        <span style="color: var(--gd-text-light); font-size: 13px;">{{ review.created_at | date:'dd/MM/yyyy' }}</span>
+      </div>
+      <div class="pc-rating mb-1">
+        <i class="bi bi-star-fill" ng-repeat="n in [1,2,3,4,5]" ng-if="n <= review.rating"></i>
+        <i class="bi bi-star" ng-repeat="n in [1,2,3,4,5]" ng-if="n > review.rating"></i>
+      </div>
+      <p>{{ review.content }}</p>
+      <img ng-if="review.image_url" ng-src="{{ review.image_url }}" style="width: 90px; height: 90px; object-fit: cover; border-radius: var(--gd-radius);">
+    </div>
+    <p ng-if="!vm.product.reviews.length" class="text-muted">Chưa có đánh giá nào cho sản phẩm này.</p>
+  </div>
+
+  <gd-recently-viewed exclude-id="vm.product.product_id"></gd-recently-viewed>
+  <gd-value-props></gd-value-props>
+  <gd-instagram-feed></gd-instagram-feed>
+  <gd-faq-section></gd-faq-section>
+  <gd-app-promo></gd-app-promo>
+</div>

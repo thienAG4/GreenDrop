@@ -1,0 +1,20 @@
+<div class="gd-admin-login-layout">
+  <div class="gd-admin-login-card">
+    <h1>Greendrop Admin</h1>
+    <p class="subtitle">Đăng nhập bằng tài khoản Admin hoặc Nhân viên</p>
+    <form ng-submit="vm.submit()">
+      <div class="gd-field">
+        <label class="gd-label">Email</label>
+        <input type="email" class="form-control-gd" ng-model="vm.credentials.email" required>
+      </div>
+      <div class="gd-field">
+        <label class="gd-label">Mật khẩu</label>
+        <input type="password" class="form-control-gd" ng-model="vm.credentials.password" required>
+      </div>
+      <p class="gd-field-error" ng-if="vm.errorMessage">{{ vm.errorMessage }}</p>
+      <button type="submit" class="btn-gd btn-gd-primary w-100" ng-disabled="vm.submitting">
+        <span class="gd-spinner gd-spinner-sm" ng-if="vm.submitting"></span> Đăng nhập
+      </button>
+    </form>
+  </div>
+</div>

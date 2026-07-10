@@ -1,0 +1,84 @@
+<div class="gd-container gd-section-sm">
+  <div class="d-flex align-items-center gap-3 mb-4">
+    <a href="/" class="btn-gd btn-gd-secondary btn-gd-sm" style="border-radius: 50%; width: 40px; height: 40px; padding: 0;"><i class="bi bi-arrow-left"></i></a>
+    <h1 class="gd-h1" style="font-size: 26px; margin: 0;">Thanh toán sản phẩm</h1>
+  </div>
+
+  <p ng-if="vm.loading" class="gd-loading-block">Đang tải giỏ hàng...</p>
+
+  <div ng-if="!vm.loading && !vm.cart.items.length" class="text-center py-5">
+    <i class="bi bi-bag-x" style="font-size: 48px; color: var(--gd-text-light);"></i>
+    <p class="mt-3">Giỏ hàng của bạn đang trống.</p>
+    <a href="/san-pham" class="btn-gd btn-gd-primary">Tiếp tục mua sắm</a>
+  </div>
+
+  <div class="row g-4" ng-if="!vm.loading && vm.cart.items.length">
+    <div class="col-lg-8">
+      <div class="gd-card mb-3" ng-repeat="line in vm.cart.items">
+        <div class="row align-items-center">
+          <div class="col-2">
+            <img ng-src="{{ line.image_url || 'https://placehold.co/150x150?text=' + (line.item_type === 'combo' ? 'Combo' : line.name) }}" class="img-fluid rounded">
+          </div>
+          <div class="col-3">
+            <strong>{{ line.name }}</strong>
+            <div><span class="gd-badge gd-badge-neutral" ng-if="line.item_type === 'combo'">Combo tự thiết kế</span></div>
+            <div ng-if="!line.available" class="gd-field-error">Sản phẩm không còn khả dụng</div>
+          </div>
+          <div class="col-2">
+            <div class="gd-qty-stepper">
+              <button ng-click="vm.changeQty(line, -1)" ng-disabled="line.quantity <= 1">-</button>
+              <span>{{ line.quantity }}</span>
+              <button ng-click="vm.changeQty(line, 1)" ng-disabled="line.item_type === 'product' && line.quantity >= line.stock_quantity">+</button>
+            </div>
+          </div>
+          <div class="col-2 pc-price-current">{{ line.line_total | gdCurrency }}</div>
+          <div class="col-3 text-end">
+            <a href="javascript:void(0)" class="text-nowrap" ng-click="vm.addToWishlist(line)" style="font-size: 13px;">Thêm vào yêu thích</a>
+            <br>
+            <a href="javascript:void(0)" ng-click="vm.removeItem(line)" style="font-size: 13px; color: var(--gd-error);">Xoá</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-4">
+      <div class="gd-card mb-3">
+        <h3 class="gd-h3">Thông tin đơn hàng</h3>
+        <div class="d-flex justify-content-between mb-2"><span>Tạm tính</span><span>{{ vm.cart.subtotal | gdCurrency }}</span></div>
+        <div class="d-flex justify-content-between mb-2"><span>Số lượng</span><span>{{ vm.cart.items.length }} sản phẩm</span></div>
+        <div class="d-flex justify-content-between mb-2" ng-if="vm.voucherResult"><span>Giảm giá ({{ vm.voucherCode }})</span><span>-{{ vm.voucherResult.discount_amount | gdCurrency }}</span></div>
+        <hr>
+        <div class="d-flex justify-content-between mb-3"><strong>Tổng cộng</strong><strong class="pc-price-current">{{ vm.total() | gdCurrency }}</strong></div>
+        <button class="btn-gd btn-gd-primary w-100" ng-click="vm.goToCheckout()">Thanh toán</button>
+      </div>
+
+      <div class="gd-card mb-3">
+        <h3 class="gd-h3">Mã giảm giá</h3>
+        <div class="d-flex gap-2">
+          <input class="form-control-gd flex-grow-1" placeholder="Nhập mã voucher" ng-model="vm.voucherCode" ng-disabled="vm.voucherResult">
+          <button class="btn-gd btn-gd-secondary flex-shrink-0 text-nowrap" ng-if="!vm.voucherResult" ng-click="vm.applyVoucher()">Áp dụng</button>
+        </div>
+        <p class="gd-field-error" ng-if="vm.voucherError">{{ vm.voucherError }}</p>
+        <p class="gd-field-ok" ng-if="vm.voucherResult">Áp dụng thành công! Giảm {{ vm.voucherResult.discount_amount | gdCurrency }}</p>
+        <button class="btn-gd btn-gd-secondary btn-gd-sm mt-1" ng-if="vm.voucherResult" ng-click="vm.disableVoucher()">Huỷ voucher</button>
+      </div>
+
+      <div class="gd-card">
+        <h3 class="gd-h3">Voucher khả dụng</h3>
+        <div class="d-flex justify-content-between align-items-center gap-2 mb-2" ng-repeat="v in vm.vouchers">
+          <div class="flex-grow-1">
+            <strong>{{ v.code }}</strong>
+            <div style="font-size: 12px; color: var(--gd-text-light);">
+              Đến {{ v.end_at | date:'dd/MM/yyyy' }} - Đơn tối thiểu {{ v.min_order_value | gdCurrency }}
+            </div>
+          </div>
+          <span class="gd-badge gd-badge-error flex-shrink-0" ng-if="vm.isVoucherExpired(v)">Hết hạn</span>
+          <button class="btn-gd btn-gd-secondary btn-gd-sm flex-shrink-0 text-nowrap" ng-if="!vm.isVoucherExpired(v)" ng-click="vm.applyVoucher(v.code)">Dùng ngay</button>
+        </div>
+        <p ng-if="!vm.vouchers.length" class="text-muted" style="font-size: 14px;">Hiện chưa có voucher khả dụng.</p>
+      </div>
+    </div>
+  </div>
+
+  <gd-recently-viewed></gd-recently-viewed>
+</div>

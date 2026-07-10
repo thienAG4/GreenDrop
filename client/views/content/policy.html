@@ -1,0 +1,28 @@
+<div class="gd-container gd-section-sm">
+  <div class="gd-layout-sidebar">
+    <aside class="gd-card gd-policy-toc">
+      <h3 class="gd-h3"><i class="bi bi-list-ul"></i> Mục lục</h3>
+      <ul class="list-unstyled">
+        <li ng-repeat="s in vm.sections" ng-class="{active: vm.active === s.id}">
+          <a href="#{{ s.id }}" ng-click="vm.setActive(s.id)" ng-class="{'fw-bold': vm.active === s.id}">{{ s.title }}</a>
+        </li>
+      </ul>
+    </aside>
+
+    <div class="gd-policy-content">
+      <section id="{{ s.id }}" class="mb-5" ng-repeat="s in vm.sections">
+        <h2 class="gd-h2 gd-policy-heading">{{ s.title }}</h2>
+        <ol>
+          <li ng-repeat="item in s.items">{{ item }}</li>
+        </ol>
+      </section>
+
+      <div class="d-flex justify-content-center gap-3">
+        <a href="/" class="btn-gd btn-gd-secondary">Về trang chủ</a>
+        <a href="/dang-nhap" class="btn-gd btn-gd-primary">Đăng nhập</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<gd-app-promo></gd-app-promo>

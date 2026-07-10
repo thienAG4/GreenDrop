@@ -1,0 +1,117 @@
+<div class="gd-container gd-section-sm" style="max-width: 760px;">
+  <p ng-if="vm.loading" class="gd-loading-block">Đang tải...</p>
+
+  <div ng-if="!vm.loading">
+    <div class="gd-stepper" ng-if="vm.step !== 'not-satisfied'">
+      <div class="step" ng-class="{active: vm.step === 'select', done: vm.step === 'reason' || vm.step === 'confirm' || vm.step === 'result'}"><span class="dot">1</span> Chọn đơn hàng</div>
+      <div class="sep"></div>
+      <div class="step" ng-class="{active: vm.step === 'reason', done: vm.step === 'confirm' || vm.step === 'result'}"><span class="dot">2</span> Lý do huỷ</div>
+      <div class="sep"></div>
+      <div class="step" ng-class="{active: vm.step === 'confirm', done: vm.step === 'result'}"><span class="dot">3</span> Xác nhận</div>
+      <div class="sep"></div>
+      <div class="step" ng-class="{active: vm.step === 'result'}"><span class="dot">4</span> Hoàn tất</div>
+    </div>
+
+    <!-- Not satisfied -->
+    <div ng-if="vm.step === 'not-satisfied'" class="text-center py-4">
+      <div class="gd-modal-icon error mx-auto"><i class="bi bi-x-lg"></i></div>
+      <h2 class="gd-h2">Không thể huỷ đơn hàng</h2>
+      <p class="text-muted">Đơn hàng hiện đang ở trạng thái "{{ vm.order.status === 'shipping' ? 'Đang giao hàng' : vm.order.status }}" nên không thể huỷ.</p>
+      <div class="gd-alert gd-alert-warning mx-auto mb-3" style="max-width: 500px;">
+        Chỉ có thể huỷ đơn hàng khi đơn đang ở trạng thái "Đã xác nhận" (đang chuẩn bị hàng).
+      </div>
+      <a href="/don-hang/{{ vm.order.order_id }}" class="btn-gd btn-gd-primary">Quay lại đơn hàng</a>
+      <a href="/lien-he" class="btn-gd btn-gd-destructive ms-2">Liên hệ hỗ trợ</a>
+    </div>
+
+    <!-- Step 1: Chọn đơn hàng -->
+    <div ng-if="vm.step === 'select'" class="gd-card">
+      <h2 class="gd-h2">Xác nhận đơn hàng cần huỷ</h2>
+      <p class="text-muted mb-3">Đơn hàng #{{ vm.order.order_id }} - đặt ngày {{ vm.order.order_date }}</p>
+      <div class="d-flex align-items-center gap-2 mb-2" ng-repeat="item in vm.order.items">
+        <img ng-src="{{ item.thumbnail_url || 'https://placehold.co/60x60?text=%20' }}" style="width: 48px; height: 48px; object-fit: cover; border-radius: var(--gd-radius);">
+        <span>{{ item.item_type === 'combo' ? 'Combo tự thiết kế' : item.name }} x{{ item.quantity }}</span>
+      </div>
+      <hr>
+      <div class="d-flex justify-content-between mb-3"><strong>Tổng cộng</strong><strong class="pc-price-current">{{ vm.order.total_amount | gdCurrency }}</strong></div>
+      <a href="/don-hang/{{ vm.order.order_id }}" class="btn-gd btn-gd-secondary">Không, quay lại đơn hàng</a>
+      <button class="btn-gd btn-gd-destructive ms-2" ng-click="vm.goToReason()">Tiếp tục huỷ đơn</button>
+    </div>
+
+    <!-- Step 2: Reason -->
+    <div ng-if="vm.step === 'reason'" class="gd-card">
+      <h2 class="gd-h2">Chọn lý do huỷ đơn</h2>
+      <p class="text-muted">Đơn hàng #{{ vm.order.order_id }} - {{ vm.order.total_amount | gdCurrency }}</p>
+      <div class="form-check mb-2" ng-repeat="opt in vm.reasonOptions">
+        <input class="form-check-input" type="radio" ng-model="vm.selectedReason" value="{{ opt.value }}" id="r{{$index}}">
+        <label class="form-check-label" for="r{{$index}}">{{ opt.label }}</label>
+      </div>
+      <textarea class="form-control-gd mt-2" ng-if="vm.selectedReason === 'other'" ng-model="vm.otherReasonText" placeholder="Nhập lý do khác..."></textarea>
+      <button class="btn-gd btn-gd-secondary mt-3" ng-click="vm.step = 'select'">Quay lại</button>
+      <button class="btn-gd btn-gd-destructive mt-3 ms-2" ng-disabled="!vm.selectedReason" ng-click="vm.goToConfirm()">Tiếp tục huỷ đơn</button>
+    </div>
+
+    <!-- Step 3: Confirm -->
+    <div ng-if="vm.step === 'confirm'" class="gd-card">
+      <h2 class="gd-h2">Xác nhận huỷ đơn</h2>
+
+      <div class="gd-label">Sản phẩm trong đơn</div>
+      <div class="d-flex align-items-center gap-2 mb-2" ng-repeat="item in vm.order.items">
+        <img ng-src="{{ item.thumbnail_url || 'https://placehold.co/60x60?text=%20' }}" style="width: 48px; height: 48px; object-fit: cover; border-radius: var(--gd-radius);">
+        <div>
+          <div>{{ item.item_type === 'combo' ? 'Combo tự thiết kế' : item.name }} x{{ item.quantity }}</div>
+          <div class="text-muted" style="font-size: 12px;" ng-if="item.item_type === 'combo' && item.components.length">
+            <span ng-repeat="c in item.components">{{ c.name }}<span ng-if="!$last">, </span></span>
+          </div>
+        </div>
+      </div>
+      <hr>
+
+      <p><strong>Lý do:</strong> {{ vm.reasonLabel() }}</p>
+      <p><strong>Số tiền sẽ được hoàn:</strong> {{ vm.order.total_amount | gdCurrency }}</p>
+      <p class="text-muted">Yêu cầu sẽ được xử lý trong thời gian sớm nhất có thể.</p>
+
+      <div ng-if="vm.needsBankInfo()" class="mt-3">
+        <div class="gd-label">Thông tin nhận hoàn tiền</div>
+        <p class="text-muted" style="font-size: 13px;">Đơn hàng thanh toán COD nên hệ thống chưa có thông tin tài khoản của bạn - vui lòng cung cấp để chúng tôi hoàn tiền đúng nơi.</p>
+        <div class="d-flex gap-3 mb-2 flex-wrap">
+          <div class="form-check" ng-repeat="m in vm.bankMethods">
+            <input class="form-check-input" type="radio" ng-model="vm.bankInfo.method" value="{{ m.value }}" id="bm{{$index}}">
+            <label class="form-check-label" for="bm{{$index}}">{{ m.label }}</label>
+          </div>
+        </div>
+        <div ng-if="vm.bankInfo.method === 'bank'" class="d-flex gap-2 flex-wrap">
+          <input class="form-control-gd" style="flex: 1; min-width: 200px;" ng-model="vm.bankInfo.bank_name" placeholder="Tên ngân hàng (VD: Vietcombank)">
+          <input class="form-control-gd" style="flex: 1; min-width: 200px;" ng-model="vm.bankInfo.account_number" placeholder="Số tài khoản">
+        </div>
+        <input ng-if="vm.bankInfo.method === 'card'" class="form-control-gd" ng-model="vm.bankInfo.card_number" placeholder="Số thẻ Visa/Mastercard">
+        <input ng-if="vm.bankInfo.method === 'momo'" class="form-control-gd" ng-model="vm.bankInfo.momo_number" placeholder="Số điện thoại Momo">
+        <div class="gd-alert gd-alert-warning mt-2">Vui lòng nhập chính xác thông tin để đảm bảo hoàn tiền thành công.</div>
+      </div>
+
+      <div class="gd-alert gd-alert-warning mb-3 mt-3">Hành động này không thể hoàn tác.</div>
+      <p class="gd-field-error" ng-if="vm.errorMessage">{{ vm.errorMessage }}</p>
+      <button class="btn-gd btn-gd-secondary" ng-click="vm.step = 'reason'">Quay lại</button>
+      <button class="btn-gd btn-gd-destructive ms-2" ng-disabled="vm.submitting" ng-click="vm.confirmCancel()">Xác nhận huỷ đơn</button>
+    </div>
+
+    <!-- Step 4: Result - refunded -->
+    <div ng-if="vm.step === 'result' && vm.order.payment_status === 'refunded'" class="text-center py-4">
+      <div class="gd-modal-icon success mx-auto"><i class="bi bi-check-lg"></i></div>
+      <h2 class="gd-h2">Huỷ đơn & hoàn tiền thành công</h2>
+      <p class="text-muted" ng-if="vm.isOnlinePayment()">Số tiền {{ vm.order.total_amount | gdCurrency }} đã được hoàn qua {{ vm.paymentMethodLabel() }}.</p>
+      <p class="text-muted" ng-if="!vm.isOnlinePayment()">Số tiền {{ vm.order.total_amount | gdCurrency }} sẽ được hoàn theo thông tin bạn đã cung cấp.</p>
+      <a href="/don-hang/{{ vm.order.order_id }}" class="btn-gd btn-gd-secondary">Xem đơn hàng</a>
+      <a href="/san-pham" class="btn-gd btn-gd-primary ms-2">Mua lại</a>
+    </div>
+
+    <!-- Step 4: Result - refund failed -->
+    <div ng-if="vm.step === 'result' && vm.order.payment_status !== 'refunded'" class="text-center py-4">
+      <div class="gd-modal-icon warning mx-auto"><i class="bi bi-exclamation-triangle"></i></div>
+      <h2 class="gd-h2">Đơn hàng đã huỷ - Hoàn tiền thất bại</h2>
+      <p class="text-muted">Yêu cầu hoàn tiền của bạn đã được chuyển cho bộ phận hỗ trợ xử lý thủ công. Mã hỗ trợ: #SUP-{{ vm.order.order_id }}</p>
+      <a href="/don-hang/{{ vm.order.order_id }}" class="btn-gd btn-gd-secondary">Xem đơn hàng</a>
+      <a href="/lien-he" class="btn-gd btn-gd-destructive ms-2">Liên hệ hỗ trợ</a>
+    </div>
+  </div>
+</div>

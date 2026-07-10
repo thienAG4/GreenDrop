@@ -1,0 +1,19 @@
+<div class="gd-promo-banner" ng-class="vm.layoutClass">
+  <div class="gd-promo-banner-image" ng-style="{'background-image': 'url(' + image + ')'}"></div>
+  <div class="gd-promo-banner-content">
+    <h3 ng-if="title">{{ title }}</h3>
+    <p ng-if="subtitle">{{ subtitle }}</p>
+    <a class="btn-gd btn-gd-accent" ng-if="ctaText" href="{{ ctaLink || '/san-pham' }}">{{ ctaText }}</a>
+
+    <div class="gd-promo-banner-top" ng-if="dateRange">
+      <span class="gd-promo-banner-icon"><i class="bi bi-percent"></i></span>
+      <span class="gd-promo-banner-date-pill">{{ dateRange }}</span>
+    </div>
+    <div class="gd-promo-banner-seasonal-text" ng-if="highlightValue">
+      <p class="gd-promo-banner-line1" ng-if="line1">{{ line1 }}</p>
+      <p class="gd-promo-banner-line2" ng-if="line2">{{ line2 }}</p>
+      <h3 class="gd-promo-banner-highlight">{{ highlightValue }}</h3>
+      <small class="gd-promo-banner-disclaimer" ng-if="disclaimer">{{ disclaimer }}</small>
+    </div>
+  </div>
+</div>

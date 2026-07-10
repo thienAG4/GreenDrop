@@ -1,0 +1,29 @@
+<div class="gd-container gd-section-sm">
+  <div class="row g-4 align-items-center">
+    <div class="col-md-6">
+      <h1 class="gd-h1">Liên hệ với chúng tôi</h1>
+      <p class="gd-field-ok" ng-if="vm.sent">Đã gửi tin nhắn thành công! Chúng tôi sẽ phản hồi sớm nhất.</p>
+      <form ng-submit="vm.submit()" ng-if="!vm.sent">
+        <div class="mb-3"><label class="gd-label">Họ và tên</label><input class="form-control-gd" ng-model="vm.form.name"></div>
+        <div class="mb-3"><label class="gd-label">Email</label><input class="form-control-gd" ng-model="vm.form.email"></div>
+        <div class="mb-3"><label class="gd-label">Nội dung</label><textarea class="form-control-gd" rows="5" ng-model="vm.form.message"></textarea></div>
+        <button type="submit" class="btn-gd btn-gd-primary">Gửi tin nhắn</button>
+      </form>
+    </div>
+    <div class="col-md-6 text-center">
+      <img src="https://placehold.co/500x400?text=Contact+Us" class="img-fluid rounded">
+    </div>
+  </div>
+
+  <div class="row g-3 mt-4">
+    <div class="col-md-4">
+      <div class="gd-card text-center"><i class="bi bi-geo-alt" style="font-size: 24px; color: var(--gd-forest);"></i><p class="mb-0 mt-2">Thủ Đức, TP. Hồ Chí Minh</p></div>
+    </div>
+    <div class="col-md-4">
+      <div class="gd-card text-center"><i class="bi bi-telephone" style="font-size: 24px; color: var(--gd-forest);"></i><p class="mb-0 mt-2">0862.729.306</p></div>
+    </div>
+    <div class="col-md-4">
+      <div class="gd-card text-center"><i class="bi bi-envelope" style="font-size: 24px; color: var(--gd-forest);"></i><p class="mb-0 mt-2">GreenDrop@example.com</p></div>
+    </div>
+  </div>
+</div>

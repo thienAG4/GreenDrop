@@ -1,0 +1,45 @@
+<div class="gd-container gd-section-sm">
+  <a href="/san-pham" class="btn-gd btn-gd-secondary btn-gd-sm mb-3"><i class="bi bi-arrow-left"></i> Xem sản phẩm</a>
+
+  <p ng-if="vm.loading" class="gd-loading-block">Đang tải combo...</p>
+  <p ng-if="!vm.loading && vm.notFound" class="text-muted">Không tìm thấy combo này.</p>
+
+  <div class="row g-4" ng-if="!vm.loading && vm.combo">
+    <div class="col-md-6">
+      <img ng-src="{{ vm.thumbnail() }}" class="img-fluid rounded w-100" style="aspect-ratio: 4/3; object-fit: cover;">
+    </div>
+    <div class="col-md-6 d-flex flex-column">
+      <div class="d-flex justify-content-between align-items-start mb-2">
+        <h1 class="gd-h1" style="font-size: 26px;">{{ vm.combo.name }}</h1>
+        <span class="gd-badge gd-badge-info">{{ vm.typeLabel() }}</span>
+      </div>
+      <p class="text-muted mb-3"><i class="bi bi-person-circle"></i> Thiết kế bởi {{ vm.combo.creator_name }}</p>
+
+      <div class="gd-card mb-3">
+        <div class="gd-label mb-2">Thành phần</div>
+        <div class="d-flex justify-content-between mb-1" ng-repeat="item in vm.combo.items" style="font-size: 14px;">
+          <span>
+            <span class="gd-badge gd-badge-neutral">{{ vm.roleLabel(item.component_role) }}</span>
+            {{ item.name }} <span class="text-muted" ng-if="item.quantity > 1">× {{ item.quantity }}</span>
+          </span>
+          <span class="text-muted">{{ item.price * item.quantity | gdCurrency }}</span>
+        </div>
+      </div>
+
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <strong>Tổng cộng (đã gồm phí lắp đặt)</strong>
+        <strong class="pc-price-current" style="font-size: 20px;">{{ vm.combo.total_price | gdCurrency }}</strong>
+      </div>
+
+      <p class="gd-field-error" ng-if="vm.errorMessage">{{ vm.errorMessage }}</p>
+
+      <div class="mt-auto d-flex gap-2">
+        <button class="btn-gd btn-gd-primary flex-grow-1" ng-disabled="vm.adding" ng-click="vm.buyNow()">Mua ngay</button>
+        <button class="btn-gd btn-gd-secondary flex-grow-1" ng-disabled="vm.adding" ng-click="vm.addToCart()">Thêm vào giỏ hàng</button>
+        <button class="btn-gd btn-gd-secondary" ng-click="vm.toggleWishlist()" title="Yêu thích">
+          <i class="bi" ng-class="vm.isWishlisted() ? 'bi-heart-fill' : 'bi-heart'" style="color: var(--gd-error);"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

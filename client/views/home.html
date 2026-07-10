@@ -1,0 +1,164 @@
+<!-- 2. Hero Section -->
+<section class="gd-hero-search">
+  <div class="gd-container">
+    <h1 class="gd-h1">Grow Your Own <span style="color: var(--gd-forest);">Little Paradise</span></h1>
+    <p style="color: var(--gd-text-muted);">Khám phá thế giới Terrarium - từ cây cảnh, phụ kiện đến combo tự thiết kế.</p>
+    <a href="/san-pham" class="btn-gd btn-gd-primary">Mua ngay</a>
+    <form class="search-pill" ng-submit="vm.search()">
+      <input type="text" ng-model="vm.searchTerm" placeholder="Tìm Terrarium phù hợp">
+      <select class="form-select-gd" style="width: auto; border: none;" ng-model="vm.filterCategory">
+        <option value="">Danh mục</option>
+        <option ng-repeat="c in vm.categories" value="{{ c.category_id }}">{{ c.name }}</option>
+      </select>
+      <button type="submit" class="btn-gd btn-gd-primary btn-gd-pill">Tìm Sản Phẩm</button>
+    </form>
+  </div>
+</section>
+
+<!-- 3. Full-Width Inspiration Banner -->
+<section class="gd-promo-banner gd-promo-banner-overlay" style="border-radius: 0;">
+  <div class="gd-promo-banner-image" ng-style="{'background-image': 'url(' + vm.inspirationImage + ')'}"></div>
+  <div class="gd-promo-banner-content">
+    <h3 style="color: white">"Mang thiên nhiên vào ngôi nhà của bạn"</h3>
+  </div>
+</section>
+
+<!-- 4. Shop by Space -->
+<section class="gd-section-sm">
+  <div class="gd-container">
+    <div class="text-center mb-4">
+      <h2 class="gd-h2">Terrarium theo không gian</h2>
+      <p class="text-muted">Chọn terrarium phù hợp với từng góc nhỏ trong nhà bạn</p>
+    </div>
+    <div class="row g-3">
+      <div class="col-md-3 col-6" ng-repeat="space in vm.spaces">
+        <a class="gd-cat-card gd-cat-card-lg" href="/san-pham">
+          <img ng-src="{{ space.image }}" alt="{{ space.name }}">
+          <div class="overlay"><span>{{ space.name }}</span></div>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 5. About Us Highlight -->
+<section class="gd-section-sm" style="background: var(--gd-bg-pale-green);">
+  <div class="gd-container row align-items-center g-4">
+    <div class="col-md-6">
+      <img ng-src="{{ vm.aboutImage }}" alt="Về GreenDrop" style="width: 100%; border-radius: var(--gd-radius);">
+    </div>
+    <div class="col-md-6">
+      <span style="color: var(--gd-forest); font-weight: 700; text-transform: uppercase; font-size: 13px;">Về chúng tôi</span>
+      <h2 class="gd-h2 mt-2">Mang màu xanh đến gần bạn hơn</h2>
+      <p class="text-muted">GreenDrop là điểm đến dành cho những người yêu Terrarium - từ terrarium hoàn thiện,
+        cây cảnh, phụ kiện trang trí đến combo tự thiết kế theo phong cách riêng của bạn.</p>
+      <gd-stats-card stats="vm.stats"></gd-stats-card>
+    </div>
+  </div>
+</section>
+
+<!-- 6. Product Categories & Best Sellers -->
+<section class="gd-section-sm">
+  <div class="gd-container">
+    <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+      <h2 class="gd-h2 mb-0">Sản phẩm theo danh mục</h2>
+      <a href="/san-pham" class="btn-gd btn-gd-accent btn-gd-sm">Xem tất cả sản phẩm</a>
+    </div>
+    <div class="row g-3 mb-4">
+      <div class="col-md-3 col-6" ng-repeat="cat in vm.featuredCategories">
+        <a class="gd-cat-card" href="/san-pham?category_id={{ cat.category_id }}">
+          <img ng-src="{{ cat.image }}" alt="{{ cat.name }}">
+          <div class="overlay"><span>{{ cat.name }}</span></div>
+        </a>
+      </div>
+    </div>
+    <gd-product-carousel products="vm.bestSellers"></gd-product-carousel>
+  </div>
+</section>
+
+<!-- 7. Flash Sale Banner -->
+<section class="gd-flash-sale" ng-style="{'background-image': 'url(' + vm.flashSaleImage + ')'}">
+  <div class="gd-container">
+    <h2 class="gd-h2">Ưu đãi đặc biệt từ thiên nhiên</h2>
+    <div class="gd-countdown">
+      <div class="gd-countdown-box"><span class="num">{{ vm.countdown.days }}</span><span class="unit">Ngày</span></div>
+      <div class="gd-countdown-box"><span class="num">{{ vm.countdown.hours }}</span><span class="unit">Giờ</span></div>
+      <div class="gd-countdown-box"><span class="num">{{ vm.countdown.minutes }}</span><span class="unit">Phút</span></div>
+      <div class="gd-countdown-box"><span class="num">{{ vm.countdown.seconds }}</span><span class="unit">Giây</span></div>
+    </div>
+    <a href="/san-pham" class="btn-gd btn-gd-accent">Mua ngay</a>
+  </div>
+</section>
+
+<!-- 8. Highlighted Discounted Products -->
+<section class="gd-section-sm" ng-if="vm.discountedProducts.length">
+  <div class="gd-container">
+    <gd-product-carousel products="vm.discountedProducts" title="Sản phẩm giảm giá nổi bật"></gd-product-carousel>
+  </div>
+</section>
+
+<!-- 9. Special Promo Banners -->
+<section class="gd-section-sm" ng-if="vm.promoBanners.length">
+  <div class="gd-container">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h2 class="gd-h2 mb-0">Ưu đãi đặc biệt</h2>
+      <a href="/san-pham" class="btn-gd btn-gd-accent btn-gd-sm">Xem tất cả</a>
+    </div>
+    <div class="row g-3">
+      <div class="col-md-6" ng-repeat="b in vm.promoBanners">
+        <gd-promo-banner image="b.image" layout="seasonal" date-range="{{ b.dateRange }}" line1="{{ b.line1 }}" line2="{{ b.line2 }}" highlight-value="{{ b.highlightValue }}" disclaimer="{{ b.disclaimer }}"></gd-promo-banner>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 10. Personalized Offers -->
+<section class="gd-section-sm" style="background: var(--gd-bg-light-gray);" ng-if="vm.personalizedProducts.length">
+  <div class="gd-container">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h2 class="gd-h2 mb-0">Ưu đãi dành riêng cho bạn</h2>
+      <a href="/san-pham" class="btn-gd btn-gd-accent btn-gd-sm">Tất cả sản phẩm</a>
+    </div>
+    <gd-product-carousel products="vm.personalizedProducts"></gd-product-carousel>
+  </div>
+</section>
+
+<!-- 11. Weekly Green Offer Banner -->
+<section class="gd-section-sm">
+  <div class="gd-container">
+    <gd-promo-banner image="vm.weeklyOfferImage" layout="split" title="Ưu đãi xanh mỗi tuần" subtitle="Mỗi tuần một ưu đãi mới dành cho những người yêu Terrarium." cta-text="Mua ngay" cta-link="/san-pham"></gd-promo-banner>
+  </div>
+</section>
+
+<!-- 12. Testimonials -->
+<section class="gd-section-sm" style="background: var(--gd-bg-pale-green);">
+  <div class="gd-container">
+    <h2 class="gd-h2 text-center mb-4">Khách hàng nói gì về GreenDrop</h2>
+    <div class="row align-items-center g-4">
+      <div class="col-md-6">
+        <img ng-src="{{ vm.testimonialImage }}" alt="Khách hàng GreenDrop" style="width: 100%; border-radius: var(--gd-radius);">
+      </div>
+      <div class="col-md-6">
+        <gd-testimonial testimonials="vm.testimonials"></gd-testimonial>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Recently Viewed Products -->
+<gd-recently-viewed></gd-recently-viewed>
+
+<!-- 13. Value Propositions -->
+<gd-value-props></gd-value-props>
+
+<!-- 14. Social Media Feed -->
+<gd-instagram-feed></gd-instagram-feed>
+
+<!-- 15. FAQ Section -->
+<gd-faq-section></gd-faq-section>
+
+<!-- 16. App Promotion Banner -->
+<gd-app-promo></gd-app-promo>
+
+<!-- 17. Newsletter Subscription -->
+<gd-newsletter></gd-newsletter>

@@ -1,0 +1,68 @@
+<div class="gd-container gd-section-sm">
+  <p ng-if="vm.loading" class="gd-loading-block">Đang tải...</p>
+
+  <div ng-if="!vm.loading && vm.notFound" class="text-center py-5">
+    <i class="bi bi-exclamation-circle" style="font-size: 48px; color: var(--gd-text-light);"></i>
+    <p class="mt-3">Không tìm thấy đơn hàng. Vui lòng đăng nhập hoặc theo dõi đơn hàng bằng số điện thoại.</p>
+    <a href="/track-order" class="btn-gd btn-gd-primary">Theo dõi đơn hàng</a>
+  </div>
+
+  <div ng-if="!vm.loading && vm.order" style="max-width: 720px; margin: 0 auto;">
+    <div class="d-flex justify-content-between align-items-center mb-3 no-print">
+      <a href="/don-hang/{{ vm.order.order_id }}"><i class="bi bi-arrow-left"></i> Quay lại theo dõi đơn hàng</a>
+      <button class="btn-gd btn-gd-secondary btn-gd-sm" ng-click="vm.print()"><i class="bi bi-printer"></i> In hoá đơn</button>
+    </div>
+
+    <div class="gd-card">
+      <div class="d-flex justify-content-between align-items-start mb-3">
+        <div>
+          <h2 class="gd-h2 mb-0">HOÁ ĐƠN</h2>
+          <p class="text-muted mb-0">GreenDrop Terrarium</p>
+        </div>
+        <div class="text-end">
+          <div><strong>Mã đơn hàng:</strong> #ORD-{{ vm.order.order_id }}</div>
+          <div class="text-muted">{{ vm.order.order_date | date:'dd/MM/yyyy HH:mm' }}</div>
+        </div>
+      </div>
+      <hr>
+
+      <div class="row mb-3">
+        <div class="col-md-6">
+          <div class="gd-label">Khách hàng</div>
+          <p class="mb-0">{{ vm.order.customer_name }}</p>
+          <p class="mb-0">{{ vm.order.customer_phone }}</p>
+        </div>
+        <div class="col-md-6">
+          <div class="gd-label">Giao đến</div>
+          <p class="mb-0">{{ vm.order.shipping_address }}</p>
+        </div>
+      </div>
+
+      <table class="table align-middle">
+        <thead><tr><th>Sản phẩm</th><th class="text-end">SL</th><th class="text-end">Đơn giá</th><th class="text-end">Thành tiền</th></tr></thead>
+        <tbody>
+          <tr ng-repeat="item in vm.order.items">
+            <td>{{ item.item_type === 'combo' ? 'Combo tự thiết kế' : item.name }}</td>
+            <td class="text-end">{{ item.quantity }}</td>
+            <td class="text-end">{{ item.unit_price | gdCurrency }}</td>
+            <td class="text-end">{{ (item.unit_price * item.quantity) | gdCurrency }}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="d-flex justify-content-end">
+        <div style="min-width: 260px;">
+          <div class="d-flex justify-content-between mb-1"><span>Tạm tính</span><span>{{ vm.order.subtotal | gdCurrency }}</span></div>
+          <div class="d-flex justify-content-between mb-1"><span>Phí vận chuyển</span><span>{{ vm.order.shipping_fee | gdCurrency }}</span></div>
+          <div class="d-flex justify-content-between mb-1" ng-if="vm.order.discount_amount > 0"><span>Giảm giá</span><span>-{{ vm.order.discount_amount | gdCurrency }}</span></div>
+          <hr>
+          <div class="d-flex justify-content-between"><strong>Tổng cộng</strong><strong class="pc-price-current">{{ vm.order.total_amount | gdCurrency }}</strong></div>
+        </div>
+      </div>
+
+      <hr>
+      <p class="mb-0"><strong>Phương thức thanh toán:</strong> {{ vm.paymentMethodLabel(vm.order.payment_method) }}</p>
+      <p class="mb-0"><strong>Trạng thái thanh toán:</strong> {{ vm.paymentStatusLabel(vm.order.payment_status) }}</p>
+    </div>
+  </div>
+</div>

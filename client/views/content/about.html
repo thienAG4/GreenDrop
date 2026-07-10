@@ -1,0 +1,57 @@
+<!-- Hero: two-column (image left, kicker/headline/description right), green stats banner below -->
+<section class="gd-container gd-section-sm">
+  <div class="row g-4 align-items-stretch">
+    <div class="col-md-6">
+      <img ng-src="{{ vm.heroImage }}" class="img-fluid rounded w-100 h-100" style="object-fit: cover; max-height: 420px;">
+    </div>
+    <div class="col-md-6 d-flex flex-column justify-content-center">
+      <p style="color: var(--gd-forest); font-weight: 700;">Về chúng tôi</p>
+      <h1 class="gd-h1">ĐƯA MÀU XANH ĐẾN GẦN BẠN HƠN</h1>
+      <p style="color: var(--gd-text-muted);">GreenDrop mong muốn mang thiên nhiên thu nhỏ đến gần hơn với cuộc sống hiện đại, giúp mọi người dễ dàng sở hữu một khu vườn xanh mát ngay trong không gian sống của mình.</p>
+    </div>
+  </div>
+
+  <div class="row g-3 mt-2 text-center" style="background: var(--gd-forest); border-radius: var(--gd-radius); padding: 24px 0; color: #fff;">
+    <div class="col-4"><h3 style="font-size: 26px; color: #fff;">4+</h3><p class="mb-0">Loại cây</p></div>
+    <div class="col-4"><h3 style="font-size: 26px; color: #fff;">500+</h3><p class="mb-0">Sản phẩm</p></div>
+    <div class="col-4"><h3 style="font-size: 26px; color: #fff;">99%</h3><p class="mb-0">Khách hàng hài lòng</p></div>
+  </div>
+</section>
+
+<!-- Mission: floating card bridging hero and video sections -->
+<section class="gd-container" style="margin-top: -30px; position: relative; z-index: 1;">
+  <div class="gd-card mx-auto" style="max-width: 700px;">
+    <i class="bi bi-brightness-high" style="font-size: 28px; color: var(--gd-gold);"></i>
+    <h2 class="gd-h3">Sứ mệnh của chúng tôi</h2>
+    <p class="mb-0" style="color: var(--gd-text-muted);">GreenDrop cam kết đồng hành cùng thiên nhiên và lối sống bền vững, mang đến những sản phẩm terrarium chất lượng, thân thiện với môi trường, giúp mỗi khách hàng có thể dễ dàng chăm sóc một mảng xanh riêng ngay trong không gian sống của mình.</p>
+  </div>
+</section>
+
+<!-- Video -->
+<section class="gd-container gd-section-sm">
+  <video class="w-100 rounded" style="max-height: 480px; object-fit: cover;" controls poster="{{ vm.videoPoster }}">
+    <source src="http://localhost:4000/uploads/videos/greendrop_builder_tools.mp4" type="video/mp4">
+  </video>
+</section>
+
+<!-- Testimonials: two-column (lifestyle image left, quote + carousel right) -->
+<section class="gd-section-sm" style="background: var(--gd-bg-pale-green);">
+  <div class="gd-container">
+    <h2 class="gd-h2 text-center mb-4">Ý kiến phản hồi từ khách hàng</h2>
+    <div class="row g-4 align-items-center">
+      <div class="col-md-6">
+        <img ng-src="{{ vm.testimonialImage }}" class="img-fluid rounded w-100" style="object-fit: cover; max-height: 320px;">
+      </div>
+      <div class="col-md-6">
+        <p style="font-style: italic; font-size: 18px;">"{{ vm.currentTestimonial().content }}"</p>
+        <div class="d-flex align-items-center justify-content-between mt-4">
+          <strong>- {{ vm.currentTestimonial().name }}</strong>
+          <div class="d-flex gap-2">
+            <button class="btn-gd btn-gd-secondary btn-gd-sm" style="border-radius: 50%; width: 36px; height: 36px; padding: 0;" ng-click="vm.prevTestimonial()"><i class="bi bi-chevron-left"></i></button>
+            <button class="btn-gd btn-gd-secondary btn-gd-sm" style="border-radius: 50%; width: 36px; height: 36px; padding: 0;" ng-click="vm.nextTestimonial()"><i class="bi bi-chevron-right"></i></button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

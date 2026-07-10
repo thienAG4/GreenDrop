@@ -1,0 +1,15 @@
+<section class="gd-newsletter" ng-style="{'background-image': 'url(' + vm.image + ')'}">
+  <div class="gd-container row align-items-center g-4">
+    <div class="col-md-6">
+      <h2 class="gd-h2" style="color: var(--gd-white);">Đăng ký nhận bản tin</h2>
+      <p style="opacity: 0.85;">Nhận thông tin ưu đãi và mẹo chăm sóc Terrarium mới nhất từ GreenDrop.</p>
+    </div>
+    <div class="col-md-6">
+      <form class="gd-newsletter-form" ng-submit="vm.subscribe()">
+        <input type="email" placeholder="Nhập Email...">
+        <button type="submit" class="btn-gd btn-gd-primary btn-gd-pill" style="background: var(--gd-white); color: var(--gd-forest);">Đăng ký</button>
+      </form>
+      <p ng-if="vm.subscribed" class="gd-field-ok" style="color: var(--gd-mint);">Cảm ơn bạn đã đăng ký!</p>
+    </div>
+  </div>
+</section>

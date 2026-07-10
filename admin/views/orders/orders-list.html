@@ -1,0 +1,72 @@
+<h2 class="gd-h2">Quản lý đơn hàng</h2>
+
+<div class="row g-3 mb-3">
+  <div class="col-md-3 col-6">
+    <div class="gd-metric-card d-flex align-items-center gap-3">
+      <div class="gd-metric-icon gd-metric-icon-blue"><i class="bi bi-receipt"></i></div>
+      <div><div class="value">{{ vm.counts.total }}</div><div class="label">Tổng số đơn</div></div>
+    </div>
+  </div>
+  <div class="col-md-3 col-6">
+    <div class="gd-metric-card d-flex align-items-center gap-3">
+      <div class="gd-metric-icon gd-metric-icon-orange"><i class="bi bi-hourglass-split"></i></div>
+      <div><div class="value">{{ vm.counts.pending + vm.counts.confirmed }}</div><div class="label">Chờ xử lý</div></div>
+    </div>
+  </div>
+  <div class="col-md-3 col-6">
+    <div class="gd-metric-card d-flex align-items-center gap-3">
+      <div class="gd-metric-icon gd-metric-icon-purple"><i class="bi bi-truck"></i></div>
+      <div><div class="value">{{ vm.counts.shipping }}</div><div class="label">Đang giao</div></div>
+    </div>
+  </div>
+  <div class="col-md-3 col-6">
+    <div class="gd-metric-card d-flex align-items-center gap-3">
+      <div class="gd-metric-icon gd-metric-icon-red"><i class="bi bi-x-circle"></i></div>
+      <div><div class="value">{{ vm.counts.cancelled }}</div><div class="label">Đã huỷ</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="d-flex gap-2 mb-3 flex-wrap">
+  <button ng-repeat="f in vm.STATUS_FILTERS" class="btn-gd btn-gd-sm"
+          ng-class="vm.statusFilter === f.value ? 'btn-gd-primary' : 'btn-gd-secondary'"
+          ng-click="vm.setStatusFilter(f.value)">{{ f.label }}</button>
+</div>
+
+<p ng-if="vm.loading" class="gd-loading-block">Đang tải...</p>
+
+<div class="gd-admin-table-wrap" ng-if="!vm.loading">
+  <table class="table align-middle">
+    <thead><tr><th>Mã đơn</th><th>Sản phẩm</th><th>Khách hàng</th><th>Tổng tiền</th><th>Thanh toán</th><th>Trạng thái</th><th></th></tr></thead>
+    <tbody>
+      <tr ng-repeat="order in vm.orders">
+        <td><a href="/don-hang/{{ order.order_id }}">#{{ order.order_id }}</a></td>
+        <td>
+          <div class="d-flex" style="margin-left: -4px;">
+            <img ng-repeat="item in order.items | limitTo:4" ng-src="{{ item.thumbnail_url || 'https://placehold.co/40x40?text=%20' }}"
+                 onerror="this.onerror=null; this.src='https://placehold.co/40x40?text=%20';"
+                 class="gd-order-item-thumb" style="margin-left: 4px; border: 2px solid var(--gd-white);" title="{{ item.name }}">
+            <span class="text-muted ms-1" ng-if="order.items.length > 4">+{{ order.items.length - 4 }}</span>
+          </div>
+        </td>
+        <td>{{ order.customer_name }}<br><small class="text-muted">{{ order.customer_phone }}</small></td>
+        <td>{{ order.total_amount | gdCurrency }}</td>
+        <td>{{ vm.paymentMethodLabel(order.payment_method) }} / {{ vm.paymentStatusLabel(order.payment_status) }}</td>
+        <td><span class="gd-badge gd-badge-info">{{ vm.statusLabel(order.status) }}</span></td>
+        <td class="text-end">
+          <button class="btn-gd btn-gd-primary btn-gd-sm" ng-if="vm.NEXT_STATUS[order.status]" ng-click="vm.advance(order)">{{ vm.NEXT_LABEL[order.status] }}</button>
+          <button class="btn-gd btn-gd-destructive btn-gd-sm ms-1" ng-if="order.status === 'pending' || order.status === 'confirmed'" ng-click="vm.cancel(order)">Huỷ</button>
+        </td>
+      </tr>
+      <tr ng-if="!vm.orders.length"><td colspan="7" class="text-center text-muted py-4">Không có đơn hàng nào.</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="gd-pagination" ng-if="!vm.loading && vm.totalPages() > 1">
+  <button ng-click="vm.goToPage(1)" ng-disabled="vm.meta.page === 1"><i class="bi bi-chevron-bar-left"></i></button>
+  <button ng-click="vm.goToPage(vm.meta.page - 1)" ng-disabled="vm.meta.page === 1"><i class="bi bi-chevron-left"></i></button>
+  <button ng-repeat="p in vm.pageRange()" ng-class="{active: p === vm.meta.page}" ng-click="vm.goToPage(p)">{{ p }}</button>
+  <button ng-click="vm.goToPage(vm.meta.page + 1)" ng-disabled="vm.meta.page === vm.totalPages()"><i class="bi bi-chevron-right"></i></button>
+  <button ng-click="vm.goToPage(vm.totalPages())" ng-disabled="vm.meta.page === vm.totalPages()"><i class="bi bi-chevron-bar-right"></i></button>
+</div>

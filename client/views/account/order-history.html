@@ -1,0 +1,49 @@
+<div class="gd-container gd-section-sm">
+  <div class="gd-layout-sidebar">
+    <div ng-include="'views/partials/account-sidebar.html'"></div>
+
+    <div>
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="gd-h2 mb-0">Đơn hàng ({{ vm.orders.length }})</h2>
+        <select class="form-select-gd" style="width: auto;" ng-model="vm.statusFilter">
+          <option value="">Tất cả</option>
+          <option value="pending">Chờ xác nhận</option>
+          <option value="confirmed">Đã xác nhận</option>
+          <option value="shipping">Đang giao</option>
+          <option value="delivered">Đã giao</option>
+          <option value="cancelled">Đã huỷ</option>
+        </select>
+      </div>
+
+      <p ng-if="vm.loading" class="gd-loading-block">Đang tải...</p>
+
+      <div class="gd-card mb-3" ng-repeat="order in vm.filteredOrders()">
+        <div class="d-flex justify-content-between align-items-center mb-2" style="background: var(--gd-yellow); margin: -20px -20px 12px; padding: 12px 20px; border-radius: 6px 6px 0 0;">
+          <div>
+            <strong>#{{ order.order_id }}</strong>
+            <span class="text-muted ms-2" style="font-size: 13px;">{{ vm.paymentMethodLabel(order.payment_method) }}</span>
+          </div>
+          <span class="gd-badge" ng-class="vm.statusMeta(order.status).badge">{{ vm.statusMeta(order.status).label }}</span>
+        </div>
+
+        <div class="d-flex justify-content-between align-items-center mb-2" ng-repeat="item in order.items">
+          <div class="d-flex align-items-center gap-2">
+            <img ng-src="{{ item.thumbnail_url || 'https://placehold.co/60x60?text=%20' }}" style="width: 48px; height: 48px; object-fit: cover; border-radius: var(--gd-radius);">
+            <span>{{ item.item_type === 'combo' ? 'Combo tự thiết kế' : item.name }} x{{ item.quantity }}</span>
+          </div>
+          <span>{{ item.unit_price | gdCurrency }}</span>
+        </div>
+        <hr>
+        <div class="d-flex justify-content-between mb-3"><strong>Tổng cộng</strong><strong class="pc-price-current">{{ order.total_amount | gdCurrency }}</strong></div>
+
+        <div class="d-flex gap-2 flex-wrap">
+          <a href="/don-hang/{{ order.order_id }}" class="btn-gd btn-gd-secondary btn-gd-sm">{{ vm.viewOrTrackLabel(order) }}</a>
+          <a href="/don-hang/{{ order.order_id }}/hoa-don" class="btn-gd btn-gd-secondary btn-gd-sm">Hoá đơn</a>
+          <a href="/don-hang/{{ order.order_id }}/huy" class="btn-gd btn-gd-destructive btn-gd-sm" ng-if="vm.canCancel(order)">Huỷ đơn hàng</a>
+          <a href="/danh-gia?order_id={{ order.order_id }}" class="btn-gd btn-gd-primary btn-gd-sm" ng-if="vm.canReview(order)">Thêm nhận xét</a>
+        </div>
+      </div>
+      <p ng-if="!vm.loading && !vm.filteredOrders().length" class="text-muted">Không có đơn hàng nào.</p>
+    </div>
+  </div>
+</div>

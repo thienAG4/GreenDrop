@@ -1,0 +1,67 @@
+<div class="gd-container gd-section-sm">
+  <div class="gd-layout-sidebar">
+    <div ng-include="'views/partials/account-sidebar.html'"></div>
+
+    <div>
+      <div class="gd-breadcrumb"><a href="/tai-khoan/tra-hang">Lịch sử trả hàng</a> / <span class="current">Yêu cầu #{{ vm.returnRequest.return_id }}</span></div>
+
+      <p ng-if="vm.loading" class="gd-loading-block">Đang tải...</p>
+
+      <div ng-if="!vm.loading && vm.notFound" class="text-center py-5">
+        <i class="bi bi-exclamation-circle" style="font-size: 48px; color: var(--gd-text-light);"></i>
+        <p class="mt-3">Không tìm thấy yêu cầu trả hàng này.</p>
+      </div>
+
+      <div class="gd-card" ng-if="!vm.loading && vm.returnRequest">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h3 class="gd-h3 mb-0">Yêu cầu #{{ vm.returnRequest.return_id }}</h3>
+          <span class="gd-badge" ng-class="vm.statusMeta().badge">{{ vm.statusMeta().label }}</span>
+        </div>
+        <p class="text-muted mb-3" style="font-size: 13px;">Gửi lúc {{ vm.returnRequest.created_at | date:'dd/MM/yyyy HH:mm' }}</p>
+
+        <div class="mb-3">
+          <div style="font-weight: 700;">{{ vm.returnRequest.items[0].item_name }} x{{ vm.returnRequest.items[0].quantity }}</div>
+        </div>
+
+        <div class="mb-3">
+          <div class="gd-label">Lý do trả hàng</div>
+          <p class="mb-0">{{ vm.reasonLabel(vm.returnRequest.reason_type) }}</p>
+        </div>
+
+        <div class="mb-3" ng-if="vm.returnRequest.description">
+          <div class="gd-label">Mô tả</div>
+          <p class="mb-0">{{ vm.returnRequest.description }}</p>
+        </div>
+
+        <div class="mb-3" ng-if="vm.returnRequest.items[0].photo_url">
+          <div class="gd-label">Hình ảnh minh chứng</div>
+          <div class="d-flex flex-wrap gap-2">
+            <img ng-repeat="item in vm.returnRequest.items" ng-if="item.photo_url" ng-src="{{ item.photo_url }}" style="width: 90px; height: 90px; object-fit: cover; border-radius: var(--gd-radius);" onerror="this.onerror=null; this.src='https://placehold.co/90x90?text=No+Image';">
+          </div>
+        </div>
+
+        <div class="gd-alert gd-alert-error" ng-if="vm.returnRequest.status === 'rejected'">
+          <i class="bi bi-x-circle"></i>
+          <div>Yêu cầu bị từ chối. Lý do: {{ vm.returnRequest.reject_reason || 'Không có' }}</div>
+        </div>
+
+        <div class="gd-alert gd-alert-success" ng-if="vm.returnRequest.status === 'approved'">
+          <i class="bi bi-check-circle"></i>
+          <div>
+            Yêu cầu đã được chấp nhận. Vui lòng đóng gói và gửi sản phẩm về kho theo hướng dẫn đã gửi qua email/SMS.
+            <span ng-if="vm.returnRequest.tracking_number"> Mã vận đơn hoàn trả: <strong>{{ vm.returnRequest.tracking_number }}</strong></span>
+          </div>
+        </div>
+
+        <div class="mb-2" ng-if="vm.returnRequest.status === 'completed'">
+          <div class="gd-label">Hoàn tiền</div>
+          <div class="d-flex justify-content-between align-items-center mb-1" ng-repeat="rf in vm.returnRequest.refunds">
+            <span>{{ rf.amount | gdCurrency }}</span>
+            <span class="gd-badge" ng-class="rf.status === 'completed' ? 'gd-badge-success' : (rf.status === 'failed' ? 'gd-badge-error' : 'gd-badge-warning')">{{ vm.refundStatusLabel(rf.status) }}</span>
+          </div>
+          <p class="text-muted mb-0" ng-if="!vm.returnRequest.refunds.length" style="font-size: 13px;">Hoàn tiền đang được khởi tạo.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

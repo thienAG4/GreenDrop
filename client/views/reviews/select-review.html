@@ -1,0 +1,19 @@
+<div class="gd-container gd-section-sm">
+  <h1 class="gd-h1" style="font-size: 26px;">Đánh giá sản phẩm</h1>
+  <div class="gd-tabs mb-3">
+    <button class="gd-tab" ng-class="{active: vm.filter === 'pending'}" ng-click="vm.filter = 'pending'">Chờ đánh giá</button>
+    <button class="gd-tab" ng-class="{active: vm.filter === 'reviewed'}" ng-click="vm.filter = 'reviewed'">Đã đánh giá</button>
+  </div>
+
+  <p ng-if="vm.loading" class="gd-loading-block">Đang tải...</p>
+
+  <div class="gd-card mb-2 d-flex justify-content-between align-items-center" ng-repeat="item in vm.filteredItems()">
+    <div>
+      <strong>{{ item.item_type === 'combo' ? 'Combo tự thiết kế' : item.name }}</strong>
+      <div class="text-muted" style="font-size: 13px;">Đơn hàng #{{ item.order_id }} - {{ item.order_date | date:'dd/MM/yyyy' }}</div>
+    </div>
+    <span class="gd-badge" ng-class="item.is_reviewed ? 'gd-badge-error' : 'gd-badge-success'">{{ item.is_reviewed ? 'Đã đánh giá' : 'Chờ đánh giá' }}</span>
+    <button class="btn-gd btn-gd-primary btn-gd-sm" ng-if="!item.is_reviewed" ng-click="vm.startReview(item)">Viết đánh giá</button>
+  </div>
+  <p ng-if="!vm.loading && !vm.filteredItems().length" class="text-muted">Không có sản phẩm nào.</p>
+</div>

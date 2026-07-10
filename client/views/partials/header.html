@@ -1,0 +1,50 @@
+<header class="gd-header" ng-controller="HeaderController as vm">
+  <div class="gd-container">
+    <a href="/" class="gd-logo"><i class="bi bi-flower2"></i> Greendrop</a>
+
+    <ul class="gd-nav">
+      <li><a href="/" ng-class="{active: vm.isActive('/')}">Trang chủ</a></li>
+      <li><a href="/san-pham" ng-class="{active: vm.isActive('/san-pham')}">Sản phẩm</a></li>
+      <li><a href="/combo-builder" ng-class="{active: vm.isActive('/combo-builder')}">Terrarium Builder</a></li>
+      <li><a href="/blog" ng-class="{active: vm.isActive('/blog')}">Blog</a></li>
+      <li><a href="/ve-chung-toi" ng-class="{active: vm.isActive('/ve-chung-toi')}">Về chúng tôi</a></li>
+    </ul>
+
+    <div class="gd-header-icons">
+      <a href="/track-order" class="gd-icon-link" title="Theo dõi đơn hàng"><i class="bi bi-truck"></i></a>
+
+      <div class="dropdown">
+        <a href="javascript:void(0)" class="gd-icon-link" data-bs-toggle="dropdown" title="Tài khoản"><i class="bi bi-person"></i></a>
+        <ul class="dropdown-menu dropdown-menu-end">
+          <li ng-if="!isLoggedIn"><a class="dropdown-item" href="/dang-nhap">Đăng nhập</a></li>
+          <li ng-if="!isLoggedIn"><a class="dropdown-item" href="/dang-ky">Đăng ký</a></li>
+          <li ng-if="isLoggedIn"><a class="dropdown-item" href="/tai-khoan/thong-tin">Thông tin cá nhân</a></li>
+          <li ng-if="isLoggedIn"><a class="dropdown-item" href="/tai-khoan/don-hang">Đơn hàng của tôi</a></li>
+          <li ng-if="isLoggedIn && (currentUser.role === 'admin' || currentUser.role === 'staff')">
+            <a class="dropdown-item" href="http://localhost:8081/" target="_blank" rel="noopener">Quản trị <i class="bi bi-box-arrow-up-right"></i></a>
+          </li>
+          <li ng-if="isLoggedIn"><hr class="dropdown-divider"></li>
+          <li ng-if="isLoggedIn"><a class="dropdown-item" href="javascript:void(0)" ng-click="vm.logout()">Đăng xuất</a></li>
+        </ul>
+      </div>
+
+      <a href="/tai-khoan/yeu-thich" class="gd-icon-link" title="Yêu thích">
+        <i class="bi bi-heart"></i>
+        <span class="gd-cart-badge" ng-if="vm.wishlistCount() > 0">{{ vm.wishlistCount() }}</span>
+      </a>
+      <a href="/gio-hang" class="gd-icon-link" title="Giỏ hàng">
+        <i class="bi bi-bag"></i>
+        <span class="gd-cart-badge" ng-if="vm.cartCount() > 0">{{ vm.cartCount() }}</span>
+      </a>
+      <button class="gd-mobile-toggle" ng-click="vm.toggleMobileNav()"><i class="bi bi-list"></i></button>
+    </div>
+  </div>
+
+  <ul class="gd-nav" style="flex-direction: column; padding: 12px 20px;" ng-if="vm.mobileNavOpen">
+    <li><a href="/">Trang chủ</a></li>
+    <li><a href="/san-pham">Sản phẩm</a></li>
+    <li><a href="/combo-builder">Terrarium Builder</a></li>
+    <li><a href="/blog">Blog</a></li>
+    <li><a href="/ve-chung-toi">Về chúng tôi</a></li>
+  </ul>
+</header>

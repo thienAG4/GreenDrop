@@ -1,0 +1,48 @@
+<div class="gd-container gd-section-sm">
+  <div class="gd-layout-sidebar">
+    <div ng-include="'views/partials/account-sidebar.html'"></div>
+
+    <div>
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="gd-h2 mb-0">Quản lý địa chỉ</h2>
+        <button class="btn-gd btn-gd-primary btn-gd-sm" ng-click="vm.newAddress()" ng-if="!vm.showForm">+ Thêm địa chỉ mới</button>
+      </div>
+
+      <p ng-if="vm.loading" class="gd-loading-block">Đang tải...</p>
+
+      <div ng-if="!vm.loading && !vm.showForm">
+        <div class="gd-card mb-3" ng-repeat="a in vm.addresses">
+          <div class="d-flex justify-content-between">
+            <div>
+              <strong>{{ a.address_line }}</strong>
+              <span class="gd-badge gd-badge-success ms-2" ng-if="a.is_default">Mặc định</span>
+              <div class="text-muted">{{ a.district }}, {{ a.city }}</div>
+            </div>
+            <div>
+              <button class="btn-gd btn-gd-secondary btn-gd-sm" ng-click="vm.editAddress(a)">Sửa</button>
+              <button class="btn-gd btn-gd-destructive btn-gd-sm ms-2" ng-click="vm.remove(a)">Xoá</button>
+            </div>
+          </div>
+        </div>
+        <p ng-if="!vm.addresses.length" class="text-muted">Bạn chưa có địa chỉ nào được lưu.</p>
+      </div>
+
+      <div class="gd-card" ng-if="vm.showForm">
+        <h3 class="gd-h3">{{ vm.editingId ? 'Sửa địa chỉ' : 'Thêm địa chỉ mới' }}</h3>
+        <form ng-submit="vm.save()">
+          <div class="row g-3">
+            <div class="col-md-12"><label class="gd-label">Địa chỉ cụ thể</label><input class="form-control-gd" ng-model="vm.form.address_line" required></div>
+            <div class="col-md-6"><label class="gd-label">Quận/Huyện</label><input class="form-control-gd" ng-model="vm.form.district"></div>
+            <div class="col-md-6"><label class="gd-label">Thành phố</label><input class="form-control-gd" ng-model="vm.form.city"></div>
+          </div>
+          <div class="form-check my-3">
+            <input class="form-check-input" type="checkbox" ng-model="vm.form.is_default" id="isDefault">
+            <label class="form-check-label" for="isDefault">Đặt làm địa chỉ mặc định</label>
+          </div>
+          <button type="submit" class="btn-gd btn-gd-primary">Lưu</button>
+          <button type="button" class="btn-gd btn-gd-secondary ms-2" ng-click="vm.cancel()">Huỷ</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

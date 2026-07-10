@@ -1,0 +1,88 @@
+<div class="d-flex justify-content-between align-items-center mb-3" ng-if="!vm.showForm">
+  <h2 class="gd-h2 mb-0">Quản lý sản phẩm</h2>
+  <button class="btn-gd btn-gd-primary btn-gd-sm" ng-click="vm.newProduct()">+ Thêm sản phẩm</button>
+</div>
+<div class="gd-breadcrumb" ng-if="vm.showForm">
+  <a ng-click="vm.cancel()" style="cursor: pointer;">Quản lý sản phẩm</a> / <span class="current">{{ vm.editingId ? 'Sửa sản phẩm' : 'Thêm sản phẩm mới' }}</span>
+</div>
+
+<p ng-if="vm.loading" class="gd-loading-block">Đang tải...</p>
+
+<div ng-if="!vm.loading && !vm.showForm">
+  <div class="gd-admin-table-wrap">
+    <table class="table align-middle">
+      <thead><tr><th>Ảnh</th><th>SKU</th><th>Tên</th><th>Danh mục</th><th>Giá</th><th>Kho</th><th>Trạng thái</th><th></th></tr></thead>
+      <tbody>
+        <tr ng-repeat="p in vm.products">
+          <td><img ng-src="{{ (p.images[0] && p.images[0].url) || 'https://placehold.co/48x48?text=%20' }}"
+                   onerror="this.onerror=null; this.src='https://placehold.co/48x48?text=%20';"
+                   class="gd-order-item-thumb" style="width:48px;height:48px;"></td>
+          <td>{{ p.sku }}</td>
+          <td>{{ p.name }}</td>
+          <td>{{ p.category_name }}</td>
+          <td>{{ p.price | gdCurrency }}</td>
+          <td>{{ p.stock_quantity }}</td>
+          <td><span class="gd-badge" ng-class="p.status === 'active' ? 'gd-badge-success' : (p.status === 'out_of_stock' ? 'gd-badge-warning' : 'gd-badge-neutral')">{{ vm.statusLabel(p.status) }}</span></td>
+          <td class="text-end">
+            <button class="btn-gd btn-gd-secondary btn-gd-sm" ng-click="vm.editProduct(p)">Sửa</button>
+            <button class="btn-gd btn-gd-destructive btn-gd-sm ms-1" ng-click="vm.remove(p)">Xoá</button>
+          </td>
+        </tr>
+        <tr ng-if="!vm.products.length"><td colspan="8" class="text-center text-muted py-4">Chưa có sản phẩm nào.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="gd-pagination" ng-if="vm.totalPages() > 1">
+    <button ng-click="vm.goToPage(1)" ng-disabled="vm.meta.page === 1"><i class="bi bi-chevron-bar-left"></i></button>
+    <button ng-click="vm.goToPage(vm.meta.page - 1)" ng-disabled="vm.meta.page === 1"><i class="bi bi-chevron-left"></i></button>
+    <button ng-repeat="p in vm.pageRange()" ng-class="{active: p === vm.meta.page}" ng-click="vm.goToPage(p)">{{ p }}</button>
+    <button ng-click="vm.goToPage(vm.meta.page + 1)" ng-disabled="vm.meta.page === vm.totalPages()"><i class="bi bi-chevron-right"></i></button>
+    <button ng-click="vm.goToPage(vm.totalPages())" ng-disabled="vm.meta.page === vm.totalPages()"><i class="bi bi-chevron-bar-right"></i></button>
+  </div>
+</div>
+
+<div class="gd-card" ng-if="vm.showForm">
+  <h3 class="gd-h3">{{ vm.editingId ? 'Sửa sản phẩm' : 'Thêm sản phẩm mới' }}</h3>
+  <form ng-submit="vm.save()">
+    <div class="row g-3">
+      <div class="col-md-4"><label class="gd-label">SKU</label><input class="form-control-gd" ng-model="vm.form.sku" required></div>
+      <div class="col-md-8"><label class="gd-label">Tên sản phẩm</label><input class="form-control-gd" ng-model="vm.form.name" required></div>
+      <div class="col-md-12"><label class="gd-label">Mô tả</label><textarea class="form-control-gd" ng-model="vm.form.description"></textarea></div>
+      <div class="col-md-3"><label class="gd-label">Giá</label><input type="number" class="form-control-gd" ng-model="vm.form.price" required></div>
+      <div class="col-md-3"><label class="gd-label">Tồn kho</label><input type="number" class="form-control-gd" ng-model="vm.form.stock_quantity"></div>
+      <div class="col-md-3">
+        <label class="gd-label">Danh mục</label>
+        <select class="form-select-gd" ng-model="vm.form.category_id">
+          <option ng-repeat="c in vm.categories" value="{{ c.category_id }}">{{ c.name }}</option>
+        </select>
+      </div>
+      <div class="col-md-3">
+        <label class="gd-label">Trạng thái</label>
+        <select class="form-select-gd" ng-model="vm.form.status">
+          <option value="active">Đang bán</option>
+          <option value="inactive">Ngừng bán</option>
+          <option value="out_of_stock">Hết hàng</option>
+        </select>
+      </div>
+    </div>
+
+    <label class="gd-label mt-3">Hình ảnh</label>
+    <label class="gd-dropzone d-block mb-2">
+      <i class="bi bi-cloud-upload"></i>
+      <div>Nhấn để chọn ảnh tải lên (có thể chọn nhiều ảnh cùng lúc)</div>
+      <input type="file" accept="image/*" multiple style="display:none" gd-file-change="vm.onImagesSelected(files)">
+    </label>
+    <div class="mb-2" ng-if="vm.uploading"><span class="gd-spinner-sm"></span> Đang tải ảnh lên...</div>
+    <div class="d-flex flex-wrap mb-3">
+      <div class="gd-thumb" ng-repeat="img in vm.form.images track by $index">
+        <img ng-src="{{ img.url }}">
+        <button type="button" class="remove" ng-click="vm.removeImageField($index)">&times;</button>
+      </div>
+    </div>
+
+    <p class="gd-field-error" ng-if="vm.errorMessage">{{ vm.errorMessage }}</p>
+    <button type="submit" class="btn-gd btn-gd-primary">Lưu</button>
+    <button type="button" class="btn-gd btn-gd-secondary ms-2" ng-click="vm.cancel()">Huỷ, quay lại danh sách</button>
+  </form>
+</div>

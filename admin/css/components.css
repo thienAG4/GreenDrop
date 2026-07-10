@@ -1,0 +1,164 @@
+/* Reusable component classes ported from client/css/components.css - only
+   the subset relevant to an admin dashboard (buttons, forms, cards, badges,
+   tabs, modals, alerts, uploads, pagination). Storefront-only components
+   (product cards, promo banners, carousels, phone mockups, etc.) are left
+   out - see client/css/components.css if any of those are ever needed here. */
+
+/* Buttons */
+.btn-gd {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  height: 44px; padding: 0 24px; border-radius: var(--gd-radius); border: 1px solid transparent;
+  font-weight: 700; font-size: 15px; cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+  text-decoration: none;
+}
+.btn-gd-primary { background: var(--gd-forest); color: var(--gd-white); }
+.btn-gd-primary:hover { background: var(--gd-forest-hover); color: var(--gd-white); }
+.btn-gd-secondary { background: transparent; color: var(--gd-forest); border-color: var(--gd-forest); }
+.btn-gd-secondary:hover { background: var(--gd-bg-pale-green); }
+.btn-gd-accent { background: var(--gd-gold); color: var(--gd-text); }
+.btn-gd-accent:hover { background: var(--gd-yellow-dark); }
+.btn-gd-destructive { background: var(--gd-error); color: var(--gd-white); }
+.btn-gd-destructive:hover { background: var(--gd-error-hover); }
+.btn-gd-success { background: var(--gd-green-btn); color: var(--gd-white); }
+.btn-gd-success:hover { background: var(--gd-green-btn-hover); }
+.btn-gd-outline-error { background: transparent; color: var(--gd-error); border-color: var(--gd-error); }
+.btn-gd-outline-error:hover { background: var(--gd-error); color: var(--gd-white); }
+.btn-gd:disabled, .btn-gd.disabled {
+  background: #E0E0E0 !important; color: #9E9E9E !important; border-color: transparent !important;
+  cursor: not-allowed; pointer-events: none;
+}
+.btn-gd-sm { height: 34px; padding: 0 16px; font-size: 13px; }
+.btn-gd-pill { border-radius: var(--gd-radius-pill); }
+
+/* Inputs */
+.form-control-gd, .form-select-gd {
+  height: 44px; border: 1px solid var(--gd-border); border-radius: var(--gd-radius);
+  padding: 0 16px; width: 100%; font-size: 15px; background: var(--gd-white); color: var(--gd-text);
+}
+.form-control-gd:focus, .form-select-gd:focus {
+  outline: none; border-color: var(--gd-forest); box-shadow: 0 0 0 3px rgba(47, 91, 59, 0.12);
+}
+textarea.form-control-gd { height: auto; padding: 12px 16px; }
+.form-select-gd {
+  appearance: none; -webkit-appearance: none; -moz-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%234C4C4C' d='M1 1l5 5 5-5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 14px center; background-size: 12px 8px; padding-right: 36px;
+}
+.form-control-gd::placeholder { color: var(--gd-text-light); font-style: italic; }
+input[type="password"]::-ms-reveal, input[type="password"]::-ms-clear { display: none; }
+label.gd-label { font-size: 14px; font-weight: 700; text-transform: uppercase; color: var(--gd-text-muted); margin-bottom: 6px; display: block; }
+.gd-field-error { color: var(--gd-error); font-size: 13px; font-style: italic; margin-top: 4px; }
+.gd-field-ok { color: var(--gd-success); font-size: 13px; font-style: italic; margin-top: 4px; }
+
+/* Cards */
+.gd-card { background: var(--gd-white); border-radius: var(--gd-radius); box-shadow: var(--gd-shadow-card); padding: var(--gd-card-padding); }
+
+/* Badges / status pills */
+.gd-badge { display: inline-block; padding: 4px 12px; border-radius: var(--gd-radius-pill); font-size: 12px; font-weight: 700; }
+.gd-badge-success { background: #E5F7EC; color: var(--gd-success); }
+.gd-badge-warning { background: #FEF3E2; color: var(--gd-warning); }
+.gd-badge-error { background: #FDECEA; color: var(--gd-error); }
+.gd-badge-info { background: #EAF4FC; color: var(--gd-info); }
+.gd-badge-neutral { background: var(--gd-bg-light-gray); color: var(--gd-text-muted); }
+
+/* Chips */
+.gd-chip {
+  display: inline-flex; align-items: center; gap: 6px; background: var(--gd-bg-pale-green);
+  color: var(--gd-forest); padding: 6px 14px; border-radius: var(--gd-radius-pill); font-size: 13px; font-weight: 600;
+}
+.gd-chip button { background: none; border: none; color: inherit; font-weight: 700; cursor: pointer; padding: 0; }
+
+/* Tabs */
+.gd-tabs { display: flex; gap: 32px; border-bottom: 1px solid var(--gd-border); }
+.gd-tab {
+  padding: 12px 0; font-weight: 700; color: var(--gd-text-muted); cursor: pointer; border: none; background: none;
+  border-bottom: 3px solid transparent; margin-bottom: -1px; transition: color 0.15s ease, border-color 0.15s ease;
+}
+.gd-tab.active { color: var(--gd-forest); border-bottom-color: var(--gd-forest); }
+.gd-tab-panel { animation: gd-fade-in 0.18s ease; }
+@keyframes gd-fade-in { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+
+.pc-rating { color: var(--gd-gold); font-size: 13px; }
+
+/* Progress stepper (order status timeline) */
+.gd-stepper { display: flex; justify-content: flex-start; gap: 8px; margin-bottom: 24px; flex-wrap: wrap; }
+.gd-stepper .step { display: flex; align-items: center; gap: 8px; font-weight: 700; color: var(--gd-text-light); font-size: 13px; }
+.gd-stepper .step .dot {
+  width: 26px; height: 26px; border-radius: 50%; background: var(--gd-bg-light-gray); color: var(--gd-text-light);
+  display: flex; align-items: center; justify-content: center; font-size: 12px;
+}
+.gd-stepper .step.active { color: var(--gd-forest); }
+.gd-stepper .step.active .dot { background: var(--gd-forest); color: var(--gd-white); }
+.gd-stepper .step.done .dot { background: var(--gd-success); color: var(--gd-white); }
+.gd-stepper .sep { width: 28px; height: 2px; background: var(--gd-border); align-self: center; }
+
+/* Qty stepper */
+.gd-qty-stepper { display: inline-flex; align-items: center; border: 1px solid var(--gd-border); border-radius: var(--gd-radius-pill); overflow: hidden; }
+.gd-qty-stepper button { width: 36px; height: 36px; border: none; background: var(--gd-white); font-size: 18px; cursor: pointer; }
+.gd-qty-stepper button:disabled { color: var(--gd-text-light); cursor: not-allowed; }
+.gd-qty-stepper span { min-width: 36px; text-align: center; font-weight: 700; }
+
+/* Modal overlay (Angular-driven, not Bootstrap JS) */
+.gd-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1050;
+  display: flex; align-items: center; justify-content: center; padding: 20px;
+}
+.gd-modal { background: var(--gd-white); border-radius: var(--gd-radius); box-shadow: var(--gd-shadow-modal); max-width: 480px; width: 100%; padding: 28px; }
+.gd-modal-icon { width: 56px; height: 56px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 26px; margin: 0 auto 16px; }
+.gd-modal-icon.info { background: #EAF4FC; color: var(--gd-info); }
+.gd-modal-icon.success { background: #E5F7EC; color: var(--gd-success); }
+.gd-modal-icon.error { background: #FDECEA; color: var(--gd-error); }
+.gd-modal-icon.warning { background: #FEF3E2; color: var(--gd-warning); }
+
+/* Alert banners */
+.gd-alert { display: flex; gap: 12px; align-items: flex-start; padding: 14px 18px; border-radius: var(--gd-radius); font-size: 14px; }
+.gd-alert-info { background: #EAF4FC; color: #1B5E82; }
+.gd-alert-warning { background: #FEF3E2; color: #8A5A00; }
+.gd-alert-error { background: #FDECEA; color: #8A2A20; }
+.gd-alert-success { background: #E5F7EC; color: #1E6B3E; }
+
+/* Upload dropzone (product/review images) */
+.gd-dropzone {
+  border: 2px dashed var(--gd-border); border-radius: var(--gd-radius); padding: 28px; text-align: center;
+  color: var(--gd-text-light); cursor: pointer; background: var(--gd-bg-page);
+}
+.gd-dropzone:hover { border-color: var(--gd-forest); color: var(--gd-forest); }
+.gd-thumb { position: relative; width: 80px; height: 80px; border-radius: var(--gd-radius); overflow: hidden; display: inline-block; margin: 4px; }
+.gd-thumb img { width: 100%; height: 100%; object-fit: cover; }
+.gd-thumb .remove { position: absolute; top: 2px; right: 2px; background: rgba(0,0,0,0.6); color: #fff; border: none; border-radius: 50%; width: 20px; height: 20px; font-size: 12px; line-height: 1; cursor: pointer; }
+
+.gd-order-item-thumb { width: 40px; height: 40px; border-radius: var(--gd-radius); object-fit: cover; flex-shrink: 0; background: var(--gd-bg-page); }
+
+/* Pagination */
+.gd-pagination { display: flex; gap: 8px; justify-content: center; margin-top: 32px; margin-bottom: 24px; }
+.gd-pagination button {
+  width: 36px; height: 36px; border-radius: var(--gd-radius); border: 1px solid var(--gd-border); background: var(--gd-white);
+  cursor: pointer; font-weight: 600;
+}
+.gd-pagination button.active { background: var(--gd-forest); color: var(--gd-white); border-color: var(--gd-forest); }
+.gd-pagination button:disabled { color: var(--gd-text-light); cursor: not-allowed; }
+
+/* Toggle switch */
+.gd-switch { position: relative; display: inline-block; width: 44px; height: 24px; }
+.gd-switch input { opacity: 0; width: 0; height: 0; }
+.gd-switch .track { position: absolute; inset: 0; background: #CCC; border-radius: 999px; transition: 0.15s; cursor: pointer; }
+.gd-switch .track:before { content: ""; position: absolute; height: 18px; width: 18px; left: 3px; top: 3px; background: white; border-radius: 50%; transition: 0.15s; }
+.gd-switch input:checked + .track { background: var(--gd-green-btn); }
+.gd-switch input:checked + .track:before { transform: translateX(20px); }
+
+.gd-skeleton { background: linear-gradient(90deg, #eee 25%, #f5f5f5 50%, #eee 75%); background-size: 200% 100%; animation: gd-shimmer 1.2s infinite; border-radius: var(--gd-radius); }
+@keyframes gd-shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+.gd-spinner { width: 36px; height: 36px; border: 3px solid var(--gd-bg-pale-green); border-top-color: var(--gd-forest); border-radius: 50%; animation: gd-spin 0.7s linear infinite; }
+.gd-spinner-sm { width: 14px; height: 14px; border-width: 2px; border-color: rgba(255,255,255,0.4); border-top-color: #fff; display: inline-block; vertical-align: -2px; margin-right: 4px; }
+@keyframes gd-spin { to { transform: rotate(360deg); } }
+
+/* Bootstrap dropdown/checkbox retheme (same rationale as client/css/components.css) */
+.dropdown-menu { font-size: 14px; }
+.dropdown-item { color: var(--gd-text); }
+.dropdown-item:hover, .dropdown-item:focus, .dropdown-item:active, .dropdown-item.active {
+  background-color: var(--gd-bg-pale-green); color: var(--gd-forest);
+}
+.form-check-input:checked { background-color: var(--gd-green-btn); border-color: var(--gd-green-btn); }
+.form-check-input:focus { border-color: var(--gd-forest); box-shadow: 0 0 0 3px rgba(47, 91, 59, 0.12); }

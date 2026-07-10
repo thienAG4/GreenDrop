@@ -1,0 +1,17 @@
+<header class="gd-admin-topbar">
+  <div class="gd-topbar-search">
+    <i class="bi bi-search"></i>
+    <input type="text" placeholder="Tìm kiếm đơn hàng...">
+  </div>
+  <div class="gd-topbar-user">
+    <span>Chào, {{ currentUser.full_name }}</span>
+    <div class="dropdown">
+      <button class="btn-gd btn-gd-secondary btn-gd-sm dropdown-toggle" data-bs-toggle="dropdown">
+        <i class="bi bi-person-circle"></i>
+      </button>
+      <ul class="dropdown-menu dropdown-menu-end">
+        <li><a class="dropdown-item" href="javascript:void(0)" ng-click="side.logout()">Đăng xuất</a></li>
+      </ul>
+    </div>
+  </div>
+</header>

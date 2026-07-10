@@ -1,0 +1,72 @@
+<h2 class="gd-h2">Tổng quan quản trị</h2>
+<div class="row g-3 mb-1">
+  <div class="col-md-3 col-6">
+    <div class="gd-metric-card d-flex align-items-center gap-3">
+      <div class="gd-metric-icon gd-metric-icon-green"><i class="bi bi-box-seam"></i></div>
+      <div><div class="value">{{ vm.stats.products }}</div><div class="label">Sản phẩm</div></div>
+    </div>
+  </div>
+  <div class="col-md-3 col-6">
+    <div class="gd-metric-card d-flex align-items-center gap-3">
+      <div class="gd-metric-icon gd-metric-icon-blue"><i class="bi bi-cash-coin"></i></div>
+      <div><div class="value">{{ vm.stats.totalRevenue | gdCurrency }}</div><div class="label">Tổng doanh thu</div></div>
+    </div>
+  </div>
+  <div class="col-md-3 col-6">
+    <div class="gd-metric-card d-flex align-items-center gap-3">
+      <div class="gd-metric-icon gd-metric-icon-purple"><i class="bi bi-people"></i></div>
+      <div><div class="value">{{ vm.stats.totalCustomers }}</div><div class="label">Tổng khách hàng</div></div>
+    </div>
+  </div>
+  <div class="col-md-3 col-6">
+    <div class="gd-metric-card d-flex align-items-center gap-3">
+      <div class="gd-metric-icon gd-metric-icon-orange"><i class="bi bi-bag-check"></i></div>
+      <div><div class="value">{{ vm.stats.pendingOrders }}</div><div class="label">Đơn chờ xử lý</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="row g-3 mb-1">
+  <div class="col-md-3 col-6">
+    <div class="gd-metric-card d-flex align-items-center gap-3">
+      <div class="gd-metric-icon gd-metric-icon-red"><i class="bi bi-arrow-return-left"></i></div>
+      <div><div class="value">{{ vm.stats.pendingReturns }}</div><div class="label">Yêu cầu trả hàng chờ duyệt</div></div>
+    </div>
+  </div>
+  <div class="col-md-3 col-6">
+    <div class="gd-metric-card d-flex align-items-center gap-3">
+      <div class="gd-metric-icon gd-metric-icon-green"><i class="bi bi-ticket-perforated"></i></div>
+      <div><div class="value">{{ vm.stats.activeVouchers }}</div><div class="label">Voucher đang hoạt động</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="row g-3 mt-1">
+  <div class="col-lg-8">
+    <div class="gd-card">
+      <h3 class="gd-h3">Doanh thu 14 ngày gần nhất</h3>
+      <div style="height: 280px;">
+        <gd-chart ng-if="vm.revenueChartData" type="'line'" data="vm.revenueChartData" options="vm.revenueChartOptions"></gd-chart>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-4">
+    <div class="gd-card">
+      <h3 class="gd-h3">Đơn hàng theo trạng thái</h3>
+      <div style="height: 280px;">
+        <gd-chart ng-if="vm.orderStatusChartData" type="'doughnut'" data="vm.orderStatusChartData" options="vm.orderStatusChartOptions"></gd-chart>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row g-3 mt-1">
+  <div class="col-lg-12">
+    <div class="gd-card">
+      <h3 class="gd-h3">Top 5 sản phẩm doanh thu cao nhất</h3>
+      <div style="height: 280px;">
+        <gd-chart ng-if="vm.topProductsChartData" type="'bar'" data="vm.topProductsChartData" options="vm.topProductsChartOptions"></gd-chart>
+      </div>
+    </div>
+  </div>
+</div>

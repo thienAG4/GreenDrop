@@ -1,0 +1,20 @@
+<section class="gd-section-sm" style="background: var(--gd-bg-light-gray);">
+  <div class="gd-container row g-4">
+    <div class="col-md-5">
+      <img ng-src="{{ vm.image }}" alt="GreenDrop FAQ" style="width: 100%; border-radius: var(--gd-radius);">
+    </div>
+    <div class="col-md-7">
+      <h2 class="gd-h2 mb-3">Câu hỏi về GreenDrop</h2>
+      <div class="accordion" id="{{ vm.accordionId }}">
+        <div class="accordion-item" ng-repeat="faq in vm.faqs">
+          <h2 class="accordion-header">
+            <button class="accordion-button" ng-class="{collapsed: !$first}" type="button" data-bs-toggle="collapse" data-bs-target="#{{ vm.accordionId }}-{{$index}}">{{ faq.q }}</button>
+          </h2>
+          <div id="{{ vm.accordionId }}-{{$index}}" class="accordion-collapse collapse" ng-class="{show: $first}" data-bs-parent="#{{ vm.accordionId }}">
+            <div class="accordion-body">{{ faq.a }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

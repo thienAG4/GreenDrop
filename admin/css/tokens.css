@@ -1,0 +1,57 @@
+/*
+  Design tokens from DESIGNS.md. Two palettes were given (an early one in
+  section 1.1, and a more specific one in the "extracted from your design
+  guide" section at the end) - the second is treated as authoritative where
+  they overlap; the first fills in roles the second didn't cover (info/warning
+  colors, footer background, section backgrounds).
+*/
+:root {
+  /* Brand */
+  --gd-forest: #2F5B3B;
+  --gd-forest-dark: #1B2F23;
+  --gd-forest-hover: #244a2f;
+  --gd-green-btn: #09AD2A;
+  --gd-green-btn-hover: #078a22;
+  --gd-mint: #C3FFCF;
+  --gd-light-green: #78C27B;
+
+  /* Accent */
+  --gd-gold: #F5B83D;
+  --gd-yellow: #F9CF38;
+  --gd-yellow-dark: #FBC02D;
+
+  /* Status */
+  --gd-error: #E74C3C;
+  --gd-error-hover: #EB5757;
+  --gd-success: #27AE60;
+  --gd-warning: #F39C12;
+  --gd-info: #3498DB;
+
+  /* Text */
+  --gd-text: #1E1E1E;
+  --gd-text-muted: #4C4C4C;
+  --gd-text-light: #7F8C8D;
+  --gd-text-offwhite: #F3F2F2;
+
+  /* Surfaces */
+  --gd-white: #FFFFFF;
+  --gd-bg-page: #F9F9F9;
+  --gd-bg-pale-green: #EDF5EC;
+  --gd-bg-light-gray: #F8F8F8;
+  --gd-border: #D0D5DD;
+
+  /* Shape */
+  --gd-radius: 6px;
+  --gd-radius-pill: 999px;
+  --gd-shadow-card: 0 2px 8px rgba(0, 0, 0, 0.08);
+  --gd-shadow-modal: 0 8px 24px rgba(0, 0, 0, 0.15);
+
+  /* Spacing */
+  --gd-container-max: 1200px;
+  --gd-gutter: 24px;
+  --gd-section-padding: 60px;
+  --gd-card-padding: 20px;
+
+  /* Type */
+  --gd-font: 'Nunito Sans', 'Inter', 'Helvetica Neue', Arial, sans-serif;
+}

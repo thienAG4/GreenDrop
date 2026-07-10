@@ -1,0 +1,91 @@
+<div class="d-flex justify-content-between align-items-center mb-3" ng-if="!vm.showForm">
+  <h2 class="gd-h2 mb-0">Quản lý Combo Builder</h2>
+  <button class="btn-gd btn-gd-primary btn-gd-sm" ng-click="vm.newCombo()">+ Tạo thiết kế</button>
+</div>
+<div class="gd-breadcrumb" ng-if="vm.showForm">
+  <a ng-click="vm.cancel()" style="cursor: pointer;">Quản lý Combo Builder</a> / <span class="current">{{ vm.editingId ? 'Sửa thiết kế' : 'Tạo thiết kế mới' }}</span>
+</div>
+
+<p ng-if="vm.loading" class="gd-loading-block">Đang tải...</p>
+
+<div class="gd-admin-table-wrap" ng-if="!vm.loading && !vm.showForm">
+  <table class="table align-middle">
+    <thead><tr><th>Tên thiết kế</th><th>Loại</th><th>Người tạo</th><th>Số vật liệu</th><th>Tổng giá</th><th>Ngày tạo</th><th></th></tr></thead>
+    <tbody>
+      <tr ng-repeat="c in vm.combos">
+        <td>{{ c.name }}</td>
+        <td><span class="gd-badge gd-badge-neutral">{{ vm.typeLabel(c.combo_type) }}</span></td>
+        <td>{{ c.creator_name }}</td>
+        <td>{{ c.item_count }}</td>
+        <td>{{ c.total_price | gdCurrency }}</td>
+        <td>{{ c.created_at | gdDate:'dd/MM/yyyy' }}</td>
+        <td class="text-end">
+          <button class="btn-gd btn-gd-secondary btn-gd-sm" ng-click="vm.editCombo(c)">Sửa</button>
+          <button class="btn-gd btn-gd-destructive btn-gd-sm ms-1" ng-click="vm.remove(c)">Xoá</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <p ng-if="!vm.combos.length" class="text-muted p-3 mb-0">Chưa có thiết kế Combo Builder nào.</p>
+</div>
+
+<div ng-if="vm.showForm">
+  <div class="row g-3">
+    <div class="col-lg-7">
+      <div class="gd-card mb-3">
+        <label class="gd-label">Tên thiết kế</label>
+        <input class="form-control-gd" ng-model="vm.comboName">
+      </div>
+
+      <div class="gd-card">
+        <h3 class="gd-h3">Thư viện vật liệu</h3>
+        <p ng-if="vm.libraryLoading" class="gd-loading-block">Đang tải...</p>
+        <div ng-if="!vm.libraryLoading" ng-repeat="group in vm.library" class="mb-3">
+          <h4 style="font-size: 14px; font-weight: 700; margin-bottom: 8px;">{{ group.category }} <span class="gd-badge gd-badge-neutral">{{ vm.roleLabel(group.role) }}</span></h4>
+          <div class="row g-2">
+            <div class="col-md-6" ng-repeat="p in group.products">
+              <button type="button" class="btn-gd btn-gd-secondary btn-gd-sm w-100 d-flex justify-content-between" ng-click="vm.addComponent(p, group.role)">
+                <span>{{ p.name }}</span><span>{{ p.price | gdCurrency }}</span>
+              </button>
+            </div>
+          </div>
+          <p ng-if="!group.products.length" class="text-muted" style="font-size: 13px;">Không có sản phẩm còn hàng trong danh mục này.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-5">
+      <div class="gd-card">
+        <h3 class="gd-h3">Thành phần đã chọn</h3>
+        <div class="gd-alert gd-alert-error mb-2" ng-if="!vm.meetsMinimum()">
+          <i class="bi bi-exclamation-triangle"></i>
+          <div>Thiết kế cần có ít nhất 1 <strong>chậu/bình</strong> và 1 <strong>đất/giá thể</strong> để có thể lưu (BR-02).</div>
+        </div>
+
+        <div ng-repeat="item in vm.placed" class="d-flex justify-content-between align-items-center mb-2">
+          <div>
+            <div>{{ item.name }}</div>
+            <span class="gd-badge gd-badge-neutral" style="font-size: 11px;">{{ vm.roleLabel(item.role) }}</span>
+          </div>
+          <div class="d-flex align-items-center gap-2">
+            <button type="button" class="btn-gd btn-gd-secondary btn-gd-sm" ng-click="vm.decrementQty(item)">-</button>
+            <span>{{ item.quantity }}</span>
+            <button type="button" class="btn-gd btn-gd-secondary btn-gd-sm" ng-click="vm.incrementQty(item)">+</button>
+            <button type="button" class="btn-gd btn-gd-destructive btn-gd-sm" ng-click="vm.removeComponent($index)">&times;</button>
+          </div>
+        </div>
+        <p ng-if="!vm.placed.length" class="text-muted">Chưa chọn vật liệu nào.</p>
+
+        <hr>
+        <div class="d-flex justify-content-between mb-1"><span>Tổng giá vật liệu</span><span>{{ vm.componentsTotal() | gdCurrency }}</span></div>
+        <div class="d-flex justify-content-between mb-1"><span>Phí lắp đặt (BR-06)</span><span>30.000đ</span></div>
+        <hr>
+        <div class="d-flex justify-content-between mb-3"><strong>Tổng cộng</strong><strong>{{ vm.totalPrice() | gdCurrency }}</strong></div>
+
+        <p class="gd-field-error" ng-if="vm.errorMessage">{{ vm.errorMessage }}</p>
+        <button type="button" class="btn-gd btn-gd-primary w-100" ng-disabled="!vm.meetsMinimum()" ng-click="vm.save()">Lưu thiết kế</button>
+        <button type="button" class="btn-gd btn-gd-secondary w-100 mt-2" ng-click="vm.cancel()">Huỷ, quay lại danh sách</button>
+      </div>
+    </div>
+  </div>
+</div>

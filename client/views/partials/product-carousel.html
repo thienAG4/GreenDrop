@@ -1,0 +1,28 @@
+<div class="gd-carousel-section">
+  <div class="d-flex justify-content-between align-items-end mb-3 flex-wrap gap-2" ng-if="title">
+    <div>
+      <h2 class="gd-h2 mb-1">{{ title }}</h2>
+      <p class="text-muted mb-0" ng-if="subtitle">{{ subtitle }}</p>
+    </div>
+  </div>
+
+  <div ng-if="!vm.chunks.length" class="gd-loading-block">Đang tải sản phẩm...</div>
+
+  <div id="{{ vm.carouselId }}" class="carousel slide" ng-if="vm.chunks.length">
+    <div class="carousel-inner">
+      <div class="carousel-item" ng-repeat="chunk in vm.chunks" ng-class="{active: $first}">
+        <div class="gd-product-grid gd-product-grid-4">
+          <gd-product-card ng-repeat="p in chunk" product="p"></gd-product-card>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="gd-carousel-controls" ng-if="vm.chunks.length > 1">
+    <div class="gd-carousel-progress">
+      <div class="gd-carousel-progress-bar" style="width: {{ 100 / vm.chunks.length }}%"></div>
+    </div>
+    <button class="gd-carousel-arrow" ng-click="vm.prev()" aria-label="Previous"><i class="bi bi-chevron-left"></i></button>
+    <button class="gd-carousel-arrow" ng-click="vm.next()" aria-label="Next"><i class="bi bi-chevron-right"></i></button>
+  </div>
+</div>

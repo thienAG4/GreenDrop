@@ -1,0 +1,27 @@
+<div class="gd-container gd-section-sm">
+  <div class="gd-layout-sidebar">
+    <div ng-include="'views/partials/account-sidebar.html'"></div>
+
+    <div>
+      <h2 class="gd-h2">Lịch sử trả hàng</h2>
+      <p ng-if="vm.loading" class="gd-loading-block">Đang tải...</p>
+
+      <a class="gd-card mb-2 d-block" style="text-decoration: none; color: inherit;" ng-repeat="r in vm.returns" href="/tai-khoan/tra-hang/{{ r.return_id }}">
+        <div class="d-flex justify-content-between align-items-center gap-2">
+          <div class="d-flex align-items-center gap-2" style="min-width: 0;">
+            <img ng-src="{{ vm.thumbnail(r) }}" class="flex-shrink-0" style="width: 48px; height: 48px; object-fit: cover; border-radius: var(--gd-radius);">
+            <div style="min-width: 0;">
+              <strong>Yêu cầu #{{ r.return_id }}</strong> - <span class="text-truncate d-inline-block align-bottom" style="max-width: 320px; vertical-align: bottom;">{{ vm.itemsSummary(r) }}</span>
+              <div class="text-muted" style="font-size: 13px;">{{ r.created_at | date:'dd/MM/yyyy' }} - {{ vm.reasonLabel(r.reason_type) }}</div>
+            </div>
+          </div>
+          <div class="d-flex align-items-center gap-2 flex-shrink-0">
+            <span class="gd-badge text-nowrap" ng-class="vm.statusMeta(r).badge">{{ vm.statusMeta(r).label }}</span>
+            <i class="bi bi-chevron-right text-muted"></i>
+          </div>
+        </div>
+      </a>
+      <p ng-if="!vm.loading && !vm.returns.length" class="text-muted">Bạn chưa có yêu cầu trả hàng nào.</p>
+    </div>
+  </div>
+</div>

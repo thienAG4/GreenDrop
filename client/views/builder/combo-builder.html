@@ -1,0 +1,201 @@
+<div class="gd-container gd-section-sm">
+  <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+    <h1 class="gd-h1" style="font-size: 26px;">Terrarium Builder</h1>
+    <div class="d-flex align-items-center gap-2 flex-wrap">
+      <div class="gd-tabs">
+        <button class="gd-tab" ng-class="{active: vm.mode === 'ai'}" ng-click="vm.setMode('ai')">AI Terrarium Builder</button>
+        <button class="gd-tab" ng-class="{active: vm.mode === '3d'}" ng-click="vm.setMode('3d')">3D Terrarium Studio</button>
+      </div>
+      <a href="/thiet-ke-da-luu" class="btn-gd btn-gd-secondary btn-gd-sm"><i class="bi bi-bookmark-check"></i> Thiết kế đã lưu</a>
+    </div>
+  </div>
+
+  <div class="gd-alert gd-alert-warning mb-3" ng-if="vm.mode === '3d' && !vm.isCustomer">
+    <i class="bi bi-exclamation-triangle"></i>
+    <div>3D Terrarium Studio chỉ dành cho tài khoản Khách hàng đã đăng nhập.</div>
+  </div>
+  <p ng-if="vm.errorMessage" class="gd-field-error">{{ vm.errorMessage }}</p>
+  <p ng-if="vm.loading" class="gd-loading-block">Đang tải thư viện vật liệu...</p>
+
+  <div class="row g-3" ng-if="!vm.loading">
+    <!-- Material library -->
+    <div class="col-lg-3">
+      <div class="gd-card">
+        <h3 class="gd-h3">Thư viện vật liệu</h3>
+        <div class="accordion" id="materialLib">
+          <div class="accordion-item" ng-repeat="group in vm.library">
+            <h2 class="accordion-header">
+              <button class="accordion-button" ng-class="{collapsed: !$first}" type="button" data-bs-toggle="collapse" data-bs-target="#lib{{$index}}">
+                {{ group.category }}
+              </button>
+            </h2>
+            <div id="lib{{$index}}" class="accordion-collapse collapse" ng-class="{show: $first}" data-bs-parent="#materialLib">
+              <div class="accordion-body p-2">
+                <p class="text-muted mb-2" style="font-size: 12px;" ng-if="group.role !== 'pot' && !vm.canAddNonPot()">
+                  Chọn 1 chậu/bình ở mục trên trước khi thêm vật liệu này.
+                </p>
+                <div class="d-flex align-items-center justify-content-between gap-2 mb-2 gd-lib-row"
+                     ng-repeat="p in group.products"
+                     ng-class="{'gd-lib-row-disabled': vm.isRowDisabled(group, p)}"
+                     ng-attr-draggable="{{ vm.mode === '3d' && !vm.isAddDisabled(group, p) ? 'true' : 'false' }}"
+                     gd-draggable-item="vm.dragStart(p, group.role)">
+                  <img ng-src="{{ p.images && p.images[0] ? p.images[0].url : 'https://placehold.co/48x48?text=%20' }}"
+                       onerror="this.onerror=null; this.src='https://placehold.co/48x48?text=%20';"
+                       class="gd-lib-thumb" alt="{{ p.name }}">
+                  <div class="flex-grow-1">
+                    <div style="font-size: 13px; font-weight: 700;">{{ p.name }}</div>
+                    <div style="font-size: 12px; color: var(--gd-text-light);">{{ p.price | gdCurrency }}</div>
+                  </div>
+                  <span class="gd-badge gd-badge-success" style="font-size: 10px;" ng-if="group.role === 'pot' && vm.isPotSelected(p)">Đã chọn</span>
+                  <button class="btn-gd btn-gd-secondary btn-gd-sm" ng-click="vm.addComponent(p, group.role)"
+                          ng-disabled="vm.isAddDisabled(group, p)"><i class="bi bi-plus"></i></button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Canvas -->
+    <div class="col-lg-6">
+      <div class="gd-card">
+        <div class="gd-tab-panel" ng-if="vm.mode === 'ai'">
+          <h3 class="gd-h3">Thành phần đã chọn</h3>
+          <p class="text-muted" style="font-size: 13px;" ng-if="vm.placed.length">Xem lại và chỉnh số lượng hoặc bỏ bớt vật liệu trước khi tạo ảnh AI.</p>
+          <div class="mb-3" style="min-height: 60px;">
+            <div class="gd-card d-flex justify-content-between align-items-center p-2 mb-2" ng-repeat="item in vm.placed">
+              <div class="d-flex align-items-center gap-2">
+                <img ng-src="{{ item.product.images && item.product.images[0] ? item.product.images[0].url : 'https://placehold.co/48x48?text=%20' }}"
+                     onerror="this.onerror=null; this.src='https://placehold.co/48x48?text=%20';"
+                     class="gd-lib-thumb" alt="{{ item.product.name }}">
+                <div>
+                  <div style="font-weight: 700; font-size: 14px;">{{ item.product.name }}</div>
+                  <div class="text-muted text-capitalize" style="font-size: 12px;">{{ item.role }}</div>
+                </div>
+              </div>
+              <div class="d-flex align-items-center gap-2">
+                <div class="gd-qty-stepper" ng-if="item.role !== 'pot'">
+                  <button ng-click="vm.changeQty(item, -1)">-</button><span>{{ item.quantity }}</span><button ng-click="vm.changeQty(item, 1)">+</button>
+                </div>
+                <button class="btn-gd btn-gd-secondary btn-gd-sm" ng-click="vm.removeComponent(item)"><i class="bi bi-trash"></i></button>
+              </div>
+            </div>
+            <span class="text-muted" ng-if="!vm.placed.length">Chưa có thành phần nào được chọn. Nhấn (+) từ thư viện bên trái.</span>
+          </div>
+          <button class="btn-gd btn-gd-primary" ng-disabled="vm.generatingPreview" ng-click="vm.generateAiPreview()">
+            <span class="gd-spinner gd-spinner-sm" ng-if="vm.generatingPreview"></span>
+            <i class="bi bi-stars" ng-if="!vm.generatingPreview"></i>
+            {{ vm.generatingPreview ? 'Đang tạo ảnh...' : 'Tạo ảnh AI' }}
+          </button>
+          <div class="text-center mt-3" ng-if="vm.generatingPreview">
+            <span class="gd-spinner"></span>
+            <p class="text-muted mt-2">AI đang tạo ảnh terrarium của bạn, vui lòng chờ trong giây lát...</p>
+          </div>
+          <div class="text-center mt-3" ng-if="vm.aiPreview && !vm.generatingPreview">
+            <img ng-src="{{ vm.aiPreview.image_url }}" class="img-fluid rounded">
+          </div>
+        </div>
+
+        <div class="gd-tab-panel" ng-if="vm.mode === '3d'">
+          <div class="gd-tabs mb-2"><button class="gd-tab active">Sửa thiết kế</button></div>
+
+          <!-- Step 1: no pot chosen yet - the shape everything else sits in, must be picked first -->
+          <div ng-if="!vm.selectedPot()" class="text-center py-4">
+            <p class="text-muted mb-3">Chọn 1 mẫu bình/chậu để bắt đầu thiết kế - hình dạng bình sẽ quyết định không gian sắp xếp vật liệu.</p>
+            <div class="d-flex flex-wrap justify-content-center gap-3">
+              <button type="button" class="gd-pot-pick" ng-repeat="p in vm.potLibrary()" ng-click="vm.addComponent(p, 'pot')">
+                <img ng-src="{{ p.images && p.images[0] ? p.images[0].url : 'https://placehold.co/90x90?text=%20' }}"
+                     onerror="this.onerror=null; this.src='https://placehold.co/90x90?text=%20';" alt="{{ p.name }}">
+                <div>{{ p.name }}</div>
+              </button>
+            </div>
+          </div>
+
+          <!-- Step 2: pot chosen - render its shape and let the customer drag components into it -->
+          <div ng-if="vm.selectedPot()">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <div>
+                <strong style="font-size: 14px;">{{ vm.selectedPot().product.name }}</strong>
+                <span class="text-muted" style="font-size: 12px;"> - {{ vm.potShape().widthCm }}×{{ vm.potShape().heightCm }} cm</span>
+              </div>
+              <button class="btn-gd btn-gd-secondary btn-gd-sm" ng-click="vm.changePot()">Đổi bình</button>
+            </div>
+
+            <div class="gd-pot-shape-outer mx-auto" ng-style="{aspectRatio: vm.potShape().widthCm + ' / ' + vm.potShape().heightCm}">
+              <div class="gd-pot-shape-inner" ng-style="{clipPath: vm.potShape().clipPath}" gd-dropzone="vm.onCanvasDrop($event)">
+                <div class="gd-pot-shape-empty" ng-if="vm.placed.length <= 1">Kéo thả vật liệu vào đây</div>
+                <div ng-repeat="item in vm.placed" ng-if="item.role !== 'pot'"
+                     class="gd-pot-marker" title="{{ item.product.name }}"
+                     draggable="true" gd-draggable-item="vm.dragStartExisting(item)"
+                     ng-style="{left: item.x + '%', top: item.y + '%'}">
+                  <img ng-src="{{ item.product.images && item.product.images[0] ? item.product.images[0].url : 'https://placehold.co/48x48?text=%20' }}"
+                       onerror="this.onerror=null; this.src='https://placehold.co/48x48?text=%20';" alt="{{ item.product.name }}">
+                  <button type="button" class="gd-pot-marker-remove" ng-click="vm.removeComponent(item)">&times;</button>
+                </div>
+              </div>
+            </div>
+            <p class="text-muted text-center mt-2" style="font-size: 12px;">Kéo vật liệu từ thư viện vào bình, hoặc kéo vật liệu đã đặt để đổi vị trí.</p>
+
+            <hr>
+            <p class="text-muted" style="font-size: 13px;">Khi đã sắp xếp xong, tạo ảnh AI dựa trên các vật liệu và vị trí bạn vừa đặt.</p>
+            <button class="btn-gd btn-gd-primary" ng-disabled="vm.generatingPreview" ng-click="vm.generateAiPreview()">
+              <span class="gd-spinner gd-spinner-sm" ng-if="vm.generatingPreview"></span>
+              <i class="bi bi-stars" ng-if="!vm.generatingPreview"></i>
+              {{ vm.generatingPreview ? 'Đang tạo ảnh...' : 'Tạo ảnh AI' }}
+            </button>
+            <div class="text-center mt-3" ng-if="vm.generatingPreview">
+              <span class="gd-spinner"></span>
+              <p class="text-muted mt-2">AI đang tạo ảnh terrarium của bạn, vui lòng chờ trong giây lát...</p>
+            </div>
+            <div class="text-center mt-3" ng-if="vm.aiPreview && !vm.generatingPreview">
+              <img ng-src="{{ vm.aiPreview.image_url }}" class="img-fluid rounded">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Summary -->
+    <div class="col-lg-3">
+      <div class="gd-card">
+        <h3 class="gd-h3">Combo đang xây <span class="gd-badge gd-badge-success">{{ vm.placed.length }} vật liệu</span></h3>
+        <input class="form-control-gd mb-2" ng-model="vm.comboName" placeholder="Tên thiết kế">
+
+        <div class="d-flex justify-content-between align-items-center mb-2" ng-repeat="item in vm.placed">
+          <div class="d-flex align-items-center gap-2">
+            <img ng-src="{{ item.product.images && item.product.images[0] ? item.product.images[0].url : 'https://placehold.co/32x32?text=%20' }}"
+                 onerror="this.onerror=null; this.src='https://placehold.co/32x32?text=%20';" class="gd-lib-thumb gd-lib-thumb-sm" alt="{{ item.product.name }}">
+            <span style="font-size: 13px;">{{ item.product.name }}</span>
+          </div>
+          <div class="gd-qty-stepper" ng-if="item.role !== 'pot'">
+            <button ng-click="vm.changeQty(item, -1)">-</button><span>{{ item.quantity }}</span><button ng-click="vm.changeQty(item, 1)">+</button>
+          </div>
+          <button class="btn-gd btn-gd-secondary btn-gd-sm" ng-if="item.role === 'pot'" ng-click="vm.removeComponent(item)"><i class="bi bi-trash"></i></button>
+        </div>
+
+        <hr>
+        <div class="d-flex justify-content-between mb-1" style="font-size: 13px;"><span>Vật liệu</span><span>{{ vm.componentsTotal() | gdCurrency }}</span></div>
+        <div class="d-flex justify-content-between mb-1" style="font-size: 13px;"><span>Thiết kế &amp; lắp đặt</span><span>{{ vm.ASSEMBLY_FEE | gdCurrency }}</span></div>
+        <hr>
+        <div class="d-flex justify-content-between mb-3"><strong>Tổng cộng</strong><strong class="pc-price-current">{{ vm.grandTotal() | gdCurrency }}</strong></div>
+
+        <p class="gd-field-error" ng-if="!vm.meetsMinimum() && vm.placed.length">Cần ít nhất 1 chậu, 1 loại đất nền và 1 cây.</p>
+
+        <button class="btn-gd btn-gd-primary w-100 mb-2" ng-disabled="!vm.meetsMinimum()" ng-click="vm.checkoutDesign()">Kiểm tra &amp; đặt hàng</button>
+        <button class="btn-gd btn-gd-secondary w-100" ng-disabled="!vm.meetsMinimum()" ng-click="vm.saveDesign()">Lưu Combo này</button>
+
+        <div class="gd-alert gd-alert-success mt-3" ng-if="vm.savedCombo">
+          <i class="bi bi-check-circle"></i>
+          <div>
+            Đã lưu thiết kế của bạn.
+            <a ng-href="/combo/{{ vm.savedCombo.combo_id }}">Xem chi tiết combo</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<gd-app-promo></gd-app-promo>
+<gd-newsletter></gd-newsletter>

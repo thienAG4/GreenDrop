@@ -1,0 +1,21 @@
+<a class="product-card" ng-href="/combo/{{ combo.combo_id }}">
+  <div class="gd-card" style="padding: 10px;">
+    <div class="pc-image-wrap">
+      <img ng-src="{{ vm.thumbnail() }}" alt="{{ combo.name }}" onerror="this.onerror=null; this.src='https://placehold.co/400x400?text=Combo';">
+      <span class="pc-badge">{{ vm.typeLabel() }}</span>
+      <button class="pc-wishlist" ng-class="{active: vm.isWishlisted()}" ng-click="vm.toggleWishlist($event)">
+        <i class="bi" ng-class="vm.isWishlisted() ? 'bi-heart-fill' : 'bi-heart'"></i>
+      </button>
+    </div>
+    <div class="pc-title">{{ combo.name }}</div>
+    <div class="pc-rating" style="color: var(--gd-text-light); font-size: 12px;">
+      <i class="bi bi-person-circle"></i> {{ combo.creator_name }} · {{ combo.item_count }} vật liệu
+    </div>
+    <div>
+      <span class="pc-price-current">{{ combo.total_price | gdCurrency }}</span>
+    </div>
+    <button class="btn-gd btn-gd-secondary btn-gd-sm mt-2 w-100" ng-click="vm.quickAdd($event)">
+      <i class="bi bi-bag-plus"></i> Thêm vào giỏ
+    </button>
+  </div>
+</a>

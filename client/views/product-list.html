@@ -1,0 +1,88 @@
+<div class="gd-container">
+  <div class="gd-breadcrumb"><a href="/">Trang chủ</a> / <span class="current">Sản phẩm</span></div>
+
+  <div class="gd-layout-sidebar">
+    <aside>
+      <div class="gd-card mb-3">
+        <h3 class="gd-h3">Danh mục</h3>
+        <div class="form-check" ng-repeat="cat in vm.categories">
+          <input class="form-check-input" type="checkbox" ng-checked="vm.filters.category_id === cat.category_id" ng-click="vm.toggleCategory(cat.category_id)" id="cat{{cat.category_id}}">
+          <label class="form-check-label" for="cat{{cat.category_id}}">{{ cat.name }} <span class="text-muted">({{ cat.product_count }})</span></label>
+        </div>
+      </div>
+
+      <div class="gd-card mb-3">
+        <h3 class="gd-h3">Khoảng giá</h3>
+        <div class="d-flex gap-2 mb-2">
+          <input type="number" class="form-control-gd" placeholder="Từ" ng-model="vm.filters.min_price">
+          <input type="number" class="form-control-gd" placeholder="Đến" ng-model="vm.filters.max_price">
+        </div>
+        <button class="btn-gd btn-gd-secondary btn-gd-sm w-100" ng-click="vm.applyFilters()">Áp dụng</button>
+      </div>
+    </aside>
+
+    <section>
+      <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+        <span>{{ vm.meta.total }} sản phẩm</span>
+        <div class="d-flex align-items-center gap-2 flex-wrap">
+          <form class="gd-plp-search" ng-submit="vm.applyFilters()">
+            <i class="bi bi-search"></i>
+            <input type="text" placeholder="Tìm sản phẩm..." ng-model="vm.filters.q">
+          </form>
+          <button type="button" class="btn-gd btn-gd-secondary btn-gd-sm" ng-if="vm.hasActiveFilters()" ng-click="vm.clearAllFilters()">
+            <i class="bi bi-x-circle"></i> Xoá bộ lọc
+          </button>
+          <select class="form-select-gd" style="width: auto;" ng-model="vm.filters.sort" ng-change="vm.applyFilters()">
+            <option ng-repeat="opt in vm.sortOptions" value="{{ opt.value }}">{{ opt.label }}</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="d-flex flex-wrap gap-2 mb-3" ng-if="vm.filters.category_id || vm.filters.q || vm.filters.min_price || vm.filters.max_price">
+        <span class="gd-chip" ng-if="vm.filters.q">"{{ vm.filters.q }}" <button ng-click="vm.removeFilter('q')">&times;</button></span>
+        <span class="gd-chip" ng-if="vm.filters.category_id">{{ vm.categoryName(vm.filters.category_id) }} <button ng-click="vm.removeFilter('category_id')">&times;</button></span>
+        <span class="gd-chip" ng-if="vm.filters.min_price || vm.filters.max_price">
+          {{ vm.filters.min_price || 0 | gdCurrency }} - {{ vm.filters.max_price || '...' }}
+          <button ng-click="vm.filters.min_price=null; vm.filters.max_price=null; vm.applyFilters()">&times;</button>
+        </span>
+      </div>
+
+      <div class="gd-loading-wrap" ng-class="{'is-loading': vm.loading}">
+        <div class="gd-loading-overlay" ng-if="vm.loading"><span class="gd-spinner"></span></div>
+        <div class="gd-product-grid">
+          <gd-product-card ng-repeat="p in vm.items" product="p"></gd-product-card>
+        </div>
+      </div>
+      <p ng-if="!vm.loading && !vm.items.length" class="gd-loading-block">Không tìm thấy sản phẩm phù hợp.</p>
+
+      <div class="gd-pagination" ng-if="vm.totalPages() > 1">
+        <button ng-click="vm.goToPage(1)" ng-disabled="vm.filters.page === 1"><i class="bi bi-chevron-bar-left"></i></button>
+        <button ng-click="vm.goToPage(vm.filters.page - 1)" ng-disabled="vm.filters.page === 1"><i class="bi bi-chevron-left"></i></button>
+        <button ng-repeat="p in vm.pageRange()" ng-class="{active: p === vm.filters.page}" ng-click="vm.goToPage(p)">{{ p }}</button>
+        <button ng-click="vm.goToPage(vm.filters.page + 1)" ng-disabled="vm.filters.page === vm.totalPages()"><i class="bi bi-chevron-right"></i></button>
+        <button ng-click="vm.goToPage(vm.totalPages())" ng-disabled="vm.filters.page === vm.totalPages()"><i class="bi bi-chevron-bar-right"></i></button>
+      </div>
+
+      <!-- Community Builder combos: designs made in the Terrarium Builder that
+           any shopper can view and buy. Flexible card handles combo-only fields. -->
+      <div class="mt-5" ng-if="vm.combos.length">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+          <div>
+            <h2 class="gd-h2" style="font-size: 22px;">Combo cộng đồng</h2>
+            <p class="text-muted mb-0" style="font-size: 13px;">Những thiết kế terrarium do cộng đồng GreenDrop tạo ra — xem chi tiết và đặt mua.</p>
+          </div>
+          <a href="/combo-builder" class="btn-gd btn-gd-secondary btn-gd-sm"><i class="bi bi-magic"></i> Tự thiết kế combo</a>
+        </div>
+        <div class="gd-product-grid">
+          <gd-combo-card ng-repeat="c in vm.combos" combo="c"></gd-combo-card>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>
+
+<gd-recently-viewed></gd-recently-viewed>
+<gd-value-props></gd-value-props>
+<gd-instagram-feed></gd-instagram-feed>
+<gd-faq-section></gd-faq-section>
+<gd-app-promo></gd-app-promo>

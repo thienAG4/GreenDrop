@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="vi" ng-app="app">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <base href="/">
+  <title>GreenDrop - Terrarium Shop</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/layout.css">
+</head>
+<body>
+  <div ng-include="'views/partials/header.html'"></div>
+
+  <main>
+    <div ng-view></div>
+  </main>
+
+  <div ng-include="'views/partials/footer.html'"></div>
+
+  <gd-success-modal></gd-success-modal>
+
+  <!-- Vendor -->
+  <script src="https://cdn.jsdelivr.net/npm/angular@1.8.3/angular.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/angular-route@1.8.3/angular-route.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/angular-animate@1.8.3/angular-animate.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- App core -->
+  <script src="app.js"></script>
+  <script src="app.routes.js"></script>
+
+  <!-- Filters -->
+  <script src="filters/gd-currency.filter.js"></script>
+  <script src="filters/gd-cancel-reason.filter.js"></script>
+
+  <!-- Services -->
+  <script src="services/session.service.js"></script>
+  <script src="services/http-interceptor.js"></script>
+  <script src="services/auth.service.js"></script>
+  <script src="services/categories.service.js"></script>
+  <script src="services/products.service.js"></script>
+  <script src="services/cart.service.js"></script>
+  <script src="services/orders.service.js"></script>
+  <script src="services/combos.service.js"></script>
+  <script src="services/returns.service.js"></script>
+  <script src="services/reviews.service.js"></script>
+  <script src="services/vouchers.service.js"></script>
+  <script src="services/promotions.service.js"></script>
+  <script src="services/banners.service.js"></script>
+  <script src="services/users.service.js"></script>
+  <script src="services/audit-logs.service.js"></script>
+  <script src="services/wishlist.service.js"></script>
+  <script src="services/blog.service.js"></script>
+  <script src="services/placeholder-images.service.js"></script>
+  <script src="services/recently-viewed.service.js"></script>
+  <script src="services/notify-modal.service.js"></script>
+
+  <!-- Directives -->
+  <script src="directives/success-modal.directive.js"></script>
+  <script src="directives/product-card.directive.js"></script>
+  <script src="directives/combo-card.directive.js"></script>
+  <script src="directives/product-carousel.directive.js"></script>
+  <script src="directives/promo-banner.directive.js"></script>
+  <script src="directives/stats-card.directive.js"></script>
+  <script src="directives/testimonial.directive.js"></script>
+  <script src="directives/value-prop-card.directive.js"></script>
+  <script src="directives/recently-viewed.directive.js"></script>
+  <script src="directives/value-props-section.directive.js"></script>
+  <script src="directives/instagram-feed.directive.js"></script>
+  <script src="directives/faq-section.directive.js"></script>
+  <script src="directives/app-promo.directive.js"></script>
+  <script src="directives/newsletter-section.directive.js"></script>
+
+  <!-- Controllers -->
+  <script src="controllers/shell.controller.js"></script>
+  <script src="controllers/home.controller.js"></script>
+  <script src="controllers/product-list.controller.js"></script>
+  <script src="controllers/product-detail.controller.js"></script>
+  <script src="controllers/cart.controller.js"></script>
+  <script src="controllers/checkout.controller.js"></script>
+  <script src="controllers/checkout-payment.controller.js"></script>
+  <script src="controllers/checkout-success.controller.js"></script>
+  <script src="controllers/auth/login.controller.js"></script>
+  <script src="controllers/auth/register.controller.js"></script>
+  <script src="controllers/auth/forgot-password.controller.js"></script>
+  <script src="controllers/auth/verify-code.controller.js"></script>
+  <script src="controllers/auth/reset-password.controller.js"></script>
+  <script src="controllers/account/account-sidebar.controller.js"></script>
+  <script src="controllers/account/profile.controller.js"></script>
+  <script src="controllers/account/addresses.controller.js"></script>
+  <script src="controllers/account/change-password.controller.js"></script>
+  <script src="controllers/account/wishlist.controller.js"></script>
+  <script src="controllers/account/order-history.controller.js"></script>
+  <script src="controllers/orders/order-detail.controller.js"></script>
+  <script src="controllers/orders/order-invoice.controller.js"></script>
+  <script src="controllers/orders/cancel-order.controller.js"></script>
+  <script src="controllers/orders/track-order.controller.js"></script>
+  <script src="directives/file-change.directive.js"></script>
+  <script src="controllers/returns/return-flow.controller.js"></script>
+  <script src="controllers/returns/return-history.controller.js"></script>
+  <script src="controllers/returns/return-detail.controller.js"></script>
+  <script src="controllers/reviews/select-review.controller.js"></script>
+  <script src="controllers/reviews/write-review.controller.js"></script>
+  <script src="directives/drag-drop.directive.js"></script>
+  <script src="controllers/builder/combo-builder.controller.js"></script>
+  <script src="controllers/builder/saved-designs.controller.js"></script>
+  <script src="controllers/builder/combo-detail.controller.js"></script>
+  <script src="controllers/content/blog-list.controller.js"></script>
+  <script src="controllers/content/blog-detail.controller.js"></script>
+  <script src="controllers/content/policy.controller.js"></script>
+  <script src="controllers/content/contact.controller.js"></script>
+  <script src="controllers/content/about.controller.js"></script>
+</body>
+</html>

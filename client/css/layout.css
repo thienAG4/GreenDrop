@@ -1,0 +1,147 @@
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; height: 100%; }
+body {
+  font-family: var(--gd-font);
+  color: var(--gd-text);
+  background: var(--gd-bg-page);
+  font-size: 16px;
+  line-height: 1.5;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+/* Sticky footer: header/main/footer are the three direct children of body
+   (see index.html) - main grows to fill leftover space so short pages (e.g.
+   checkout-success) don't leave the footer floating above blank whitespace. */
+body > main { flex: 1 0 auto; }
+a { color: var(--gd-forest); }
+h1, h2, h3 { font-weight: 800; color: var(--gd-text); }
+h1.gd-h1 { font-size: 32px; }
+h2.gd-h2 { font-size: 24px; }
+h3.gd-h3 { font-size: 18px; }
+
+.gd-container { max-width: var(--gd-container-max); margin: 0 auto; padding: 0 20px; }
+.gd-section { padding: var(--gd-section-padding) 0; }
+.gd-section-sm { padding: 32px 0; }
+
+/* Header */
+.gd-header {
+  position: sticky; top: 0; z-index: 1000; background: var(--gd-forest); height: 72px;
+}
+.gd-header .gd-container { display: flex; align-items: center; justify-content: space-between; height: 72px; }
+.gd-logo { color: var(--gd-white); font-weight: 800; font-size: 22px; text-decoration: none; display: flex; align-items: center; gap: 8px; }
+.gd-nav { display: flex; gap: 28px; list-style: none; margin: 0; padding: 0; }
+.gd-nav a { color: var(--gd-text-offwhite); text-decoration: none; font-weight: 600; font-size: 15px; padding-bottom: 4px; }
+.gd-nav a.active, .gd-nav a:hover { color: var(--gd-white); border-bottom: 2px solid var(--gd-yellow); }
+.gd-header-icons { display: flex; align-items: center; gap: 18px; }
+.gd-header-icons .gd-icon-link { color: var(--gd-white); font-size: 20px; text-decoration: none; position: relative; }
+.gd-cart-badge {
+  position: absolute; top: -8px; right: -10px; background: var(--gd-yellow); color: var(--gd-text);
+  font-size: 11px; font-weight: 800; border-radius: 50%; min-width: 18px; height: 18px; display: flex;
+  align-items: center; justify-content: center; padding: 0 3px;
+}
+.gd-mobile-toggle { display: none; background: none; border: none; color: white; font-size: 24px; }
+@media (max-width: 900px) {
+  .gd-nav { display: none; }
+  .gd-mobile-toggle { display: block; }
+}
+
+/* Footer */
+.gd-footer { background: var(--gd-forest-dark); color: var(--gd-text-offwhite); padding: 50px 0 0; }
+.gd-footer h4 { color: var(--gd-white); font-size: 15px; text-transform: uppercase; margin-bottom: 16px; }
+.gd-footer a { color: var(--gd-text-offwhite); text-decoration: none; font-size: 14px; line-height: 2.2; display: block; }
+.gd-footer a:hover { color: var(--gd-yellow); }
+.gd-footer-social { display: flex; gap: 12px; margin-top: 14px; }
+.gd-footer-social a { width: 34px; height: 34px; border-radius: 50%; background: rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; }
+.gd-footer-bottom { border-top: 1px solid rgba(255,255,255,0.1); margin-top: 30px; padding: 18px 0; text-align: center; font-size: 13px; color: var(--gd-text-offwhite); }
+
+/* Breadcrumbs */
+.gd-breadcrumb { font-size: 13px; color: var(--gd-text-light); margin: 18px 0; }
+.gd-breadcrumb a { color: var(--gd-text-light); text-decoration: none; }
+.gd-breadcrumb .current { color: var(--gd-forest); font-weight: 700; }
+
+/* Sidebar layout (PLP / account / policy) */
+.gd-layout-sidebar { display: grid; grid-template-columns: 280px 1fr; gap: var(--gd-gutter); align-items: start; }
+@media (max-width: 900px) { .gd-layout-sidebar { grid-template-columns: 1fr; } }
+
+/* PLP top-right search input (relocated from the sidebar) */
+.gd-plp-search {
+  display: flex; align-items: center; gap: 8px; background: var(--gd-white); border: 1px solid var(--gd-border);
+  border-radius: var(--gd-radius-pill); padding: 6px 14px; color: var(--gd-text-light);
+}
+.gd-plp-search input { border: none; outline: none; font-size: 14px; width: 200px; }
+
+.gd-product-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--gd-gutter); }
+@media (max-width: 900px) { .gd-product-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 560px) { .gd-product-grid { grid-template-columns: 1fr; } }
+
+.gd-account-sidebar { list-style: none; margin: 0; padding: 0; }
+.gd-account-sidebar a {
+  display: flex; align-items: center; gap: 10px; padding: 12px 16px; border-radius: var(--gd-radius);
+  color: var(--gd-text); text-decoration: none; font-weight: 600; margin-bottom: 4px;
+}
+.gd-account-sidebar a.active { background: var(--gd-yellow); color: var(--gd-text); }
+.gd-account-sidebar a:hover:not(.active) { background: var(--gd-bg-pale-green); }
+
+.gd-hero-search {
+  background: linear-gradient(180deg, var(--gd-bg-pale-green), var(--gd-bg-page));
+  padding: 70px 0; text-align: center;
+}
+.gd-hero-search .search-pill {
+  width: 100%; margin: 24px auto 0; display: flex; background: var(--gd-white); border-radius: var(--gd-radius-pill);
+  box-shadow: var(--gd-shadow-card); padding: 6px;
+}
+/* Scoped to .search-pill specifically - this used to be `.gd-hero-search input`,
+   which also matched the track-order form's plain .form-control-gd inputs
+   (also inside .gd-hero-search) and stripped their border. */
+.gd-hero-search .search-pill input { border: none; flex: 1; padding: 0 20px; border-radius: var(--gd-radius-pill); font-size: 15px; }
+.gd-hero-search .search-pill input:focus { outline: none; }
+
+.gd-cat-card { position: relative; border-radius: var(--gd-radius); overflow: hidden; height: 180px; text-decoration: none; display: block; }
+.gd-cat-card img { width: 100%; height: 100%; object-fit: cover; }
+.gd-cat-card .overlay { position: absolute; inset: 0; background: linear-gradient(180deg, transparent 40%, rgba(0,0,0,0.65)); display: flex; align-items: flex-end; padding: 16px; }
+.gd-cat-card .overlay span { color: white; font-weight: 800; font-size: 17px; }
+
+.gd-nav-link-btn { background: none; border: none; padding: 0; }
+
+.gd-loading-block { text-align: center; padding: 60px 0; color: var(--gd-text-light); }
+
+@media print {
+  header, footer, .gd-breadcrumb, .no-print { display: none !important; }
+}
+
+/* Smooth cross-page transition on every route change (nav links, buttons that
+   navigate) instead of the new page just snapping into place - requires the
+   ngAnimate module (loaded in index.html) to apply these to [ng-view]. */
+[ng-view].ng-enter { transition: opacity 0.2s ease-in; opacity: 0; }
+[ng-view].ng-enter.ng-enter-active { opacity: 1; }
+
+/* Reload-in-place loading state (filters, sort, pagination): keeps the
+   previous results visible-but-dimmed under a spinner instead of hard-
+   swapping to a blank block, so re-filtering doesn't flash/collapse the
+   page layout. */
+.gd-loading-wrap { position: relative; min-height: 120px; }
+.gd-loading-wrap.is-loading .gd-product-grid { opacity: 0.35; pointer-events: none; transition: opacity 0.15s ease; }
+.gd-loading-overlay { position: absolute; inset: 0; z-index: 2; display: flex; align-items: center; justify-content: center; }
+.gd-spinner { width: 36px; height: 36px; border: 3px solid var(--gd-bg-pale-green); border-top-color: var(--gd-forest); border-radius: 50%; animation: gd-spin 0.7s linear infinite; }
+.gd-spinner-sm { width: 14px; height: 14px; border-width: 2px; border-color: rgba(255,255,255,0.4); border-top-color: #fff; display: inline-block; vertical-align: -2px; margin-right: 4px; }
+@keyframes gd-spin { to { transform: rotate(360deg); } }
+
+/* Auth pages (login/register/forgot-password/etc.) */
+.gd-auth-layout { display: grid; grid-template-columns: 1fr 1fr; min-height: calc(100vh - 72px); }
+@media (max-width: 900px) { .gd-auth-layout { grid-template-columns: 1fr; } }
+/* Source image is 555x555 - sized down (not stretched to cover the whole
+   panel) so it's never scaled past its native resolution and stays sharp. */
+.gd-auth-image { background: var(--gd-bg-pale-green) url('http://localhost:4000/uploads/images/login_register.png') center/480px no-repeat; }
+.gd-auth-form-wrap { display: flex; align-items: center; justify-content: center; padding: 40px 20px; background: var(--gd-bg-pale-green); }
+.gd-auth-card { background: var(--gd-white); border-radius: var(--gd-radius); box-shadow: var(--gd-shadow-card); padding: 40px; max-width: 420px; width: 100%; }
+.gd-auth-card h1 { font-size: 24px; font-weight: 800; text-align: center; margin-bottom: 24px; }
+.gd-auth-card .gd-field { margin-bottom: 16px; position: relative; }
+/* Icon sits inside the input itself, not the field (which also contains the
+   label above it) - anchor from the bottom of the field so it lands centered
+   in the 44px input regardless of label height, instead of near the label. */
+.gd-auth-card .password-toggle { position: absolute; right: 16px; bottom: 14px; cursor: pointer; color: var(--gd-text-light); line-height: 1; }
+.gd-auth-footer-link { text-align: center; margin-top: 18px; font-size: 14px; }
+.gd-auth-footer-link a { color: var(--gd-gold); font-weight: 700; text-decoration: none; }
+.gd-verify-digits { display: flex; gap: 10px; justify-content: center; margin-bottom: 20px; }
+.gd-verify-digits input { width: 48px; height: 56px; text-align: center; font-size: 22px; border: 1px solid var(--gd-border); border-radius: var(--gd-radius); }

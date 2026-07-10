@@ -1,0 +1,18 @@
+<div class="gd-container gd-section-sm">
+  <h1 class="gd-h1">Blog GreenDrop</h1>
+  <p class="text-muted">Mẹo chăm sóc, xu hướng thiết kế và câu chuyện từ thế giới Terrarium.</p>
+  <div class="row g-3">
+    <div class="col-md-4" ng-repeat="a in vm.articles">
+      <a href="/blog/{{ a.slug }}" class="text-decoration-none text-dark">
+        <div class="gd-card">
+          <img ng-src="{{ a.image }}" class="img-fluid rounded mb-2">
+          <h3 class="gd-h3">{{ a.title }}</h3>
+          <p class="text-muted">{{ a.excerpt }}</p>
+          <small class="text-muted">{{ a.date | date:'dd/MM/yyyy' }}</small>
+        </div>
+      </a>
+    </div>
+  </div>
+</div>
+
+<gd-app-promo></gd-app-promo>

@@ -1,0 +1,79 @@
+<div class="d-flex justify-content-between align-items-center mb-3" ng-if="!vm.showForm">
+  <h2 class="gd-h2 mb-0">Quản lý Blog</h2>
+  <button class="btn-gd btn-gd-primary btn-gd-sm" ng-click="vm.newPost()">+ Thêm bài viết</button>
+</div>
+<div class="gd-breadcrumb" ng-if="vm.showForm">
+  <a ng-click="vm.cancel()" style="cursor: pointer;">Quản lý Blog</a> / <span class="current">{{ vm.editingId ? 'Sửa bài viết' : 'Thêm bài viết mới' }}</span>
+</div>
+
+<p ng-if="vm.loading" class="gd-loading-block">Đang tải...</p>
+
+<div ng-if="!vm.loading && !vm.showForm">
+  <div class="gd-admin-table-wrap">
+    <table class="table align-middle">
+      <thead><tr><th>Ảnh</th><th>Tiêu đề</th><th>Tác giả</th><th>Trạng thái</th><th>Ngày đăng</th><th></th></tr></thead>
+      <tbody>
+        <tr ng-repeat="p in vm.posts">
+          <td><img ng-src="{{ p.image_url || 'https://placehold.co/48x48?text=%20' }}"
+                   onerror="this.onerror=null; this.src='https://placehold.co/48x48?text=%20';"
+                   class="gd-order-item-thumb" style="width:48px;height:48px;"></td>
+          <td>{{ p.title }}</td>
+          <td>{{ p.author }}</td>
+          <td><span class="gd-badge" ng-class="p.status === 'published' ? 'gd-badge-success' : 'gd-badge-neutral'">{{ vm.statusLabel(p.status) }}</span></td>
+          <td>{{ p.created_at | gdDate:'dd/MM/yyyy' }}</td>
+          <td class="text-end">
+            <button class="btn-gd btn-gd-secondary btn-gd-sm" ng-click="vm.editPost(p)">Sửa</button>
+            <button class="btn-gd btn-gd-destructive btn-gd-sm ms-1" ng-click="vm.remove(p)">Xoá</button>
+          </td>
+        </tr>
+        <tr ng-if="!vm.posts.length"><td colspan="6" class="text-center text-muted py-4">Chưa có bài viết nào.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="gd-pagination" ng-if="vm.totalPages() > 1">
+    <button ng-click="vm.goToPage(1)" ng-disabled="vm.meta.page === 1"><i class="bi bi-chevron-bar-left"></i></button>
+    <button ng-click="vm.goToPage(vm.meta.page - 1)" ng-disabled="vm.meta.page === 1"><i class="bi bi-chevron-left"></i></button>
+    <button ng-repeat="p in vm.pageRange()" ng-class="{active: p === vm.meta.page}" ng-click="vm.goToPage(p)">{{ p }}</button>
+    <button ng-click="vm.goToPage(vm.meta.page + 1)" ng-disabled="vm.meta.page === vm.totalPages()"><i class="bi bi-chevron-right"></i></button>
+    <button ng-click="vm.goToPage(vm.totalPages())" ng-disabled="vm.meta.page === vm.totalPages()"><i class="bi bi-chevron-bar-right"></i></button>
+  </div>
+</div>
+
+<div class="gd-card" ng-if="vm.showForm">
+  <h3 class="gd-h3">{{ vm.editingId ? 'Sửa bài viết' : 'Thêm bài viết mới' }}</h3>
+  <form ng-submit="vm.save()">
+    <div class="row g-3">
+      <div class="col-md-8"><label class="gd-label">Tiêu đề</label><input class="form-control-gd" ng-model="vm.form.title" required></div>
+      <div class="col-md-4">
+        <label class="gd-label">Trạng thái</label>
+        <select class="form-select-gd" ng-model="vm.form.status">
+          <option value="draft">Bản nháp</option>
+          <option value="published">Đã đăng</option>
+        </select>
+      </div>
+      <div class="col-md-6"><label class="gd-label">Tác giả</label><input class="form-control-gd" ng-model="vm.form.author"></div>
+      <div class="col-md-12"><label class="gd-label">Mô tả ngắn</label><input class="form-control-gd" ng-model="vm.form.excerpt"></div>
+      <div class="col-md-12">
+        <label class="gd-label">Nội dung (mỗi đoạn cách nhau 1 dòng trống)</label>
+        <textarea class="form-control-gd" rows="8" ng-model="vm.form.content" required></textarea>
+      </div>
+    </div>
+
+    <label class="gd-label mt-3">Ảnh đại diện</label>
+    <label class="gd-dropzone d-block mb-2">
+      <i class="bi bi-cloud-upload"></i>
+      <div>Nhấn để chọn ảnh tải lên</div>
+      <input type="file" accept="image/*" style="display:none" gd-file-change="vm.onImageSelected(files)">
+    </label>
+    <div class="mb-2" ng-if="vm.uploading"><span class="gd-spinner-sm"></span> Đang tải ảnh lên...</div>
+    <div class="gd-thumb" style="width: 160px; height: 100px;" ng-if="vm.form.image_url">
+      <img ng-src="{{ vm.form.image_url }}" onerror="this.onerror=null; this.src='https://placehold.co/160x100?text=No+Image';">
+      <button type="button" class="remove" ng-click="vm.form.image_url = ''">&times;</button>
+    </div>
+
+    <p class="gd-field-error mt-2" ng-if="vm.errorMessage">{{ vm.errorMessage }}</p>
+    <button type="submit" class="btn-gd btn-gd-primary mt-3">Lưu</button>
+    <button type="button" class="btn-gd btn-gd-secondary ms-2 mt-3" ng-click="vm.cancel()">Huỷ, quay lại danh sách</button>
+  </form>
+</div>

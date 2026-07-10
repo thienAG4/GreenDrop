@@ -1,0 +1,73 @@
+<div class="gd-breadcrumb"><a href="/don-hang">Quản lý đơn hàng</a> / <span class="current">#{{ vm.order.order_id }}</span></div>
+
+<p ng-if="vm.loading" class="gd-loading-block">Đang tải...</p>
+
+<div ng-if="!vm.loading && vm.notFound" class="text-center py-5">
+  <i class="bi bi-exclamation-circle" style="font-size: 48px; color: var(--gd-text-light);"></i>
+  <p class="mt-3">Không tìm thấy đơn hàng.</p>
+</div>
+
+<div ng-if="!vm.loading && vm.order">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h2 class="gd-h2 mb-0">Đơn hàng #{{ vm.order.order_id }}</h2>
+    <div class="d-flex gap-2">
+      <button class="btn-gd btn-gd-primary btn-gd-sm" ng-if="vm.NEXT_STATUS[vm.order.status]" ng-click="vm.advance()">{{ vm.NEXT_LABEL[vm.order.status] }}</button>
+      <button class="btn-gd btn-gd-destructive btn-gd-sm" ng-if="vm.order.status === 'pending' || vm.order.status === 'confirmed'" ng-click="vm.cancel()">Huỷ đơn</button>
+    </div>
+  </div>
+
+  <div class="gd-stepper" ng-if="vm.order.status !== 'cancelled'">
+    <template ng-repeat="step in vm.timelineSteps">
+      <div class="step" ng-class="{active: $index === vm.currentStepIndex(), done: $index < vm.currentStepIndex()}">
+        <span class="dot">{{ $index < vm.currentStepIndex() ? '✓' : $index + 1 }}</span> {{ vm.statusLabel(step) }}
+      </div>
+      <div class="sep" ng-if="!$last"></div>
+    </template>
+  </div>
+  <div class="gd-alert gd-alert-error mb-3" ng-if="vm.order.status === 'cancelled'">
+    <i class="bi bi-x-circle"></i>
+    <div>Đơn hàng đã bị huỷ. Lý do: {{ vm.order.cancel_reason | gdCancelReason }}</div>
+  </div>
+
+  <div class="row g-3">
+    <div class="col-lg-8">
+      <div class="gd-card mb-3">
+        <h3 class="gd-h3">Sản phẩm</h3>
+        <div ng-repeat="item in vm.order.items" class="d-flex justify-content-between align-items-center mb-2">
+          <div class="d-flex align-items-center gap-2">
+            <img ng-src="{{ item.thumbnail_url || 'https://placehold.co/60x60?text=%20' }}" onerror="this.onerror=null; this.src='https://placehold.co/60x60?text=%20';" class="gd-order-item-thumb">
+            <span>{{ item.item_type === 'combo' ? 'Combo tự thiết kế' : item.name }} x{{ item.quantity }}</span>
+          </div>
+          <span>{{ (item.unit_price * item.quantity) | gdCurrency }}</span>
+        </div>
+        <hr>
+        <div class="d-flex justify-content-between mb-1"><span>Tạm tính</span><span>{{ vm.order.subtotal | gdCurrency }}</span></div>
+        <div class="d-flex justify-content-between mb-1" ng-if="vm.order.discount_amount > 0"><span>Giảm giá</span><span>-{{ vm.order.discount_amount | gdCurrency }}</span></div>
+        <div class="d-flex justify-content-between mb-1"><span>Phí vận chuyển</span><span>{{ vm.order.shipping_fee | gdCurrency }}</span></div>
+        <hr>
+        <div class="d-flex justify-content-between"><strong>Tổng cộng</strong><strong>{{ vm.order.total_amount | gdCurrency }}</strong></div>
+      </div>
+
+      <div class="gd-card">
+        <h3 class="gd-h3">Vận chuyển</h3>
+        <p class="mb-0">{{ vm.order.shipping_address }}</p>
+      </div>
+    </div>
+
+    <div class="col-lg-4">
+      <div class="gd-card mb-3">
+        <h3 class="gd-h3">Khách hàng</h3>
+        <p class="mb-1"><strong>{{ vm.order.customer_name }}</strong></p>
+        <p class="mb-1">{{ vm.order.customer_phone }}</p>
+        <p class="mb-2">{{ vm.order.customer_email }}</p>
+        <a class="btn-gd btn-gd-secondary btn-gd-sm w-100" href="/khach-hang/{{ vm.order.user_id }}">Hồ sơ khách hàng</a>
+      </div>
+
+      <div class="gd-card">
+        <h3 class="gd-h3">Thanh toán</h3>
+        <p class="mb-1"><strong>Phương thức:</strong> {{ vm.paymentMethodLabel(vm.order.payment_method) }}</p>
+        <p class="mb-0"><strong>Trạng thái:</strong> {{ vm.paymentStatusLabel(vm.order.payment_status) }}</p>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,52 @@
+<div ng-if="vm.article">
+  <section style="background: var(--gd-bg-pale-green); padding: 40px 0;">
+    <div class="gd-container row align-items-center">
+      <div class="col-md-6">
+        <img ng-src="{{ vm.article.image }}" class="img-fluid rounded gd-card">
+      </div>
+      <div class="col-md-6">
+        <h1 class="gd-h1">{{ vm.article.title }}</h1>
+        <p class="text-muted">{{ vm.article.author }} - {{ vm.article.date | date:'dd/MM/yyyy' }}</p>
+        <p>{{ vm.article.excerpt }}</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="gd-container gd-section-sm" style="max-width: 760px;">
+    <p ng-repeat="para in vm.article.content">{{ para }}</p>
+  </section>
+
+  <section class="gd-container gd-section-sm" ng-if="vm.related.length">
+    <h2 class="gd-h2 mb-3">Bài viết liên quan</h2>
+    <div class="row g-3">
+      <div class="col-md-4" ng-repeat="a in vm.related">
+        <a href="/blog/{{ a.slug }}" class="text-decoration-none text-dark">
+          <div class="gd-card">
+            <img ng-src="{{ a.image }}" class="img-fluid rounded mb-2">
+            <h3 class="gd-h3" style="font-size: 15px;">{{ a.title }}</h3>
+          </div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section style="background: var(--gd-bg-light-gray);" class="gd-section-sm">
+    <div class="gd-container" style="max-width: 700px;">
+      <h2 class="gd-h2">Bình luận</h2>
+      <div class="gd-card mb-2" ng-repeat="c in vm.comments">
+        <strong>{{ c.name || 'Ẩn danh' }}</strong>
+        <p class="mb-0">{{ c.message }}</p>
+      </div>
+      <form ng-submit="vm.submitComment()" class="gd-card">
+        <div class="row g-2 mb-2">
+          <div class="col-md-6"><input class="form-control-gd" placeholder="Tên" ng-model="vm.commentForm.name"></div>
+          <div class="col-md-6"><input class="form-control-gd" placeholder="Email" ng-model="vm.commentForm.email"></div>
+        </div>
+        <textarea class="form-control-gd mb-2" placeholder="Viết bình luận..." ng-model="vm.commentForm.message"></textarea>
+        <button type="submit" class="btn-gd btn-gd-secondary">Gửi bình luận</button>
+      </form>
+    </div>
+  </section>
+
+  <gd-app-promo></gd-app-promo>
+</div>

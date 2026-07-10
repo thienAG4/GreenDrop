@@ -1,0 +1,210 @@
+<div class="gd-container gd-section-sm" style="max-width: 760px;">
+  <p ng-if="vm.loading" class="gd-loading-block">Đang tải...</p>
+
+  <div ng-if="!vm.loading">
+    <a href="/don-hang/{{ vm.order.order_id }}" class="btn-gd btn-gd-secondary btn-gd-sm mb-3"><i class="bi bi-arrow-left"></i> Quay lại đơn hàng</a>
+
+    <!-- Select which item to return, when order has more than one -->
+    <div ng-if="vm.phase === 'select-item'" class="gd-card">
+      <h2 class="gd-h2">Chọn sản phẩm cần trả</h2>
+      <div class="gd-alert gd-alert-info mb-3"><i class="bi bi-info-circle"></i><div>Yêu cầu trả hàng phải được gửi trong 48h (hư hỏng/giao sai) hoặc 7 ngày (lỗi sản phẩm) kể từ khi giao hàng thành công.</div></div>
+      <div class="d-flex justify-content-between align-items-center gd-card mb-2" ng-repeat="item in vm.eligibleItems">
+        <span>{{ item.item_type === 'combo' ? 'Combo tự thiết kế' : item.name }} x{{ item.quantity }}</span>
+        <button class="btn-gd btn-gd-primary btn-gd-sm" ng-click="vm.chooseItem(item)">Yêu cầu trả hàng</button>
+      </div>
+      <p ng-if="!vm.eligibleItems.length" class="text-muted">Không có sản phẩm nào có thể yêu cầu trả hàng.</p>
+    </div>
+
+    <!-- Request form -->
+    <div ng-if="vm.phase === 'request'" class="gd-card">
+      <h2 class="gd-h2">{{ vm.priorRejectReason ? 'Bổ sung thông tin trả hàng' : 'Yêu cầu trả hàng' }}</h2>
+      <span class="gd-badge gd-badge-warning mb-2" ng-if="vm.priorRejectReason">Cần bổ sung thông tin</span>
+      <div class="gd-alert mb-3" style="background: #FFF9E5; border-left: 3px solid var(--gd-warning);" ng-if="vm.priorRejectReason">
+        <i class="bi bi-info-circle"></i>
+        <div><strong>Lý do yêu cầu trước bị từ chối:</strong> {{ vm.priorRejectReason }}</div>
+      </div>
+      <p class="text-muted">{{ vm.selectedItem.item_type === 'combo' ? 'Combo tự thiết kế' : vm.selectedItem.name }}</p>
+
+      <label class="gd-label">Lý do trả hàng</label>
+      <select class="form-select-gd mb-3" ng-model="vm.form.reason_type">
+        <option value="">-- Chọn lý do --</option>
+        <option ng-repeat="opt in vm.reasonOptions" value="{{ opt.value }}">{{ opt.label }}</option>
+      </select>
+
+      <label class="gd-label">Mô tả chi tiết</label>
+      <textarea class="form-control-gd mb-3" rows="4" ng-model="vm.form.description" placeholder="Mô tả tình trạng sản phẩm..."></textarea>
+
+      <label class="gd-label">Hình ảnh minh chứng (bắt buộc)</label>
+      <div class="gd-dropzone mb-2" onclick="this.querySelector('input').click()">
+        <input type="file" multiple accept="image/*" style="display:none;" gd-file-change="vm.onFilesSelected(files)">
+        <i class="bi bi-cloud-upload" style="font-size: 28px;"></i>
+        <p class="mb-0">Nhấn để tải ảnh lên</p>
+      </div>
+      <div class="mb-3">
+        <div class="gd-thumb" ng-repeat="src in vm.previews">
+          <img ng-src="{{ src }}">
+          <button class="remove" ng-click="vm.removeFile($index)">&times;</button>
+        </div>
+      </div>
+
+      <p class="gd-field-error" ng-if="vm.errorMessage">{{ vm.errorMessage }}</p>
+      <button class="btn-gd btn-gd-primary" ng-disabled="vm.submitting" ng-click="vm.submitRequest()">Gửi yêu cầu</button>
+    </div>
+
+    <!-- Confirmation -->
+    <div ng-if="vm.phase === 'confirmation'" class="text-center py-4">
+      <div class="gd-modal-icon success mx-auto"><i class="bi bi-check-lg"></i></div>
+      <h2 class="gd-h2">Yêu cầu trả hàng đã được gửi!</h2>
+      <div class="gd-stepper">
+        <div class="step active"><span class="dot">1</span> Đã gửi</div>
+        <div class="sep"></div>
+        <div class="step"><span class="dot">2</span> Đang xét duyệt</div>
+        <div class="sep"></div>
+        <div class="step"><span class="dot">3</span> Nhận hàng</div>
+        <div class="sep"></div>
+        <div class="step"><span class="dot">4</span> Hoàn tiền</div>
+      </div>
+
+      <div class="gd-card text-start mx-auto mb-3" style="max-width: 500px;">
+        <div class="d-flex align-items-center gap-2 mb-2">
+          <img ng-src="{{ vm.selectedItem.thumbnail_url || 'https://placehold.co/60x60?text=%20' }}" style="width: 48px; height: 48px; object-fit: cover; border-radius: var(--gd-radius);">
+          <span>{{ vm.selectedItem.item_type === 'combo' ? 'Combo tự thiết kế' : vm.selectedItem.name }}</span>
+        </div>
+        <p class="mb-1"><strong>Lý do:</strong> {{ vm.reasonLabel(vm.existingReturn.reason_type) }}</p>
+        <p class="mb-1" ng-if="vm.existingReturn.description"><strong>Mô tả:</strong> {{ vm.existingReturn.description }}</p>
+        <div class="d-flex flex-wrap gap-2 mt-2" ng-if="vm.existingReturn.items[0].photo_url">
+          <img ng-repeat="item in vm.existingReturn.items" ng-if="item.photo_url" ng-src="{{ item.photo_url }}" style="width: 60px; height: 60px; object-fit: cover; border-radius: var(--gd-radius);">
+        </div>
+      </div>
+
+      <button class="btn-gd" style="background: var(--gd-info); color: #fff; border-color: var(--gd-info);" ng-click="vm.viewStatus()">Xem trạng thái</button>
+    </div>
+
+    <!-- Timeline / derived states -->
+    <div ng-if="vm.phase === 'timeline' && vm.existingReturn">
+
+      <!-- Always-visible progress so the customer can track the return at every
+           stage (hidden only for a rejection, which has its own screen). -->
+      <div class="gd-stepper mb-4" ng-if="vm.existingReturn.status !== 'rejected'">
+        <div class="step" ng-class="vm.stepState(1)"><span class="dot">{{ vm.stepState(1) === 'done' ? '✓' : '1' }}</span> Đã gửi</div>
+        <div class="sep"></div>
+        <div class="step" ng-class="vm.stepState(2)"><span class="dot">{{ vm.stepState(2) === 'done' ? '✓' : '2' }}</span> Xét duyệt</div>
+        <div class="sep"></div>
+        <div class="step" ng-class="vm.stepState(3)"><span class="dot">{{ vm.stepState(3) === 'done' ? '✓' : '3' }}</span> Nhận hàng</div>
+        <div class="sep"></div>
+        <div class="step" ng-class="vm.stepState(4)"><span class="dot">{{ vm.stepState(4) === 'done' ? '✓' : '4' }}</span> Hoàn tiền</div>
+      </div>
+
+      <div ng-if="vm.existingReturn.status === 'pending'">
+        <div class="gd-alert gd-alert-info mb-3"><i class="bi bi-hourglass-split"></i><div>Yêu cầu đang được xét duyệt</div></div>
+        <table class="table gd-card">
+          <tbody>
+            <tr><td>Trạng thái</td><td><span class="gd-badge gd-badge-info">Đã gửi</span></td></tr>
+            <tr><td>Thời gian gửi</td><td>{{ vm.existingReturn.created_at | date:'HH:mm dd/MM/yyyy' }}</td></tr>
+            <tr><td>Hạn phản hồi</td><td>{{ vm.responseDeadline() | date:'HH:mm dd/MM/yyyy' }}</td></tr>
+          </tbody>
+        </table>
+        <button class="btn-gd btn-gd-secondary" disabled>Kết quả xét duyệt</button>
+      </div>
+
+      <div ng-if="vm.existingReturn.status === 'rejected' && !vm.isInspectionFailure()" class="text-center py-3">
+        <div class="gd-modal-icon error mx-auto"><i class="bi bi-x-lg"></i></div>
+        <h2 class="gd-h2" style="color: var(--gd-error);">Trả hàng thất bại</h2>
+        <div class="gd-alert" style="background: #FFF3E0; color: #8A5A00;">{{ vm.existingReturn.reject_reason }}</div>
+        <button class="btn-gd btn-gd-primary mt-2" ng-click="vm.resubmit()">Thêm bằng chứng</button>
+      </div>
+
+      <!-- Rejected after the item was already shipped and inspected at the
+           warehouse - not something more evidence can fix, so no resubmit
+           action here, unlike a pre-shipment review rejection above. -->
+      <div ng-if="vm.existingReturn.status === 'rejected' && vm.isInspectionFailure()" class="text-center py-3">
+        <div class="gd-modal-icon error mx-auto"><i class="bi bi-x-lg"></i></div>
+        <h2 class="gd-h2" style="color: var(--gd-error);">Không thể hoàn tiền</h2>
+        <div class="gd-alert gd-alert-error text-start">
+          <i class="bi bi-exclamation-triangle"></i>
+          <div>Sản phẩm đã được kiểm tra tại kho nhưng không đạt yêu cầu hoàn hàng.<br><strong>Lý do:</strong> {{ vm.existingReturn.reject_reason }}</div>
+        </div>
+        <a href="/lien-he" class="btn-gd btn-gd-secondary btn-gd-pill mt-2">Liên hệ hỗ trợ</a>
+      </div>
+
+      <div ng-if="vm.existingReturn.status === 'approved'" class="text-center py-3">
+        <div class="gd-modal-icon success mx-auto"><i class="bi bi-check-lg"></i></div>
+        <h2 class="gd-h2">Yêu cầu được chấp nhận</h2>
+        <div class="gd-card text-start">
+          <div class="d-flex align-items-center gap-2 mb-3">
+            <img ng-src="{{ vm.selectedItem.thumbnail_url || 'https://placehold.co/60x60?text=%20' }}" style="width: 48px; height: 48px; object-fit: cover; border-radius: var(--gd-radius);">
+            <span>{{ vm.selectedItem.item_type === 'combo' ? 'Combo tự thiết kế' : vm.selectedItem.name }}</span>
+          </div>
+          <h3 class="gd-h3">Hướng dẫn đóng gói &amp; gửi hàng</h3>
+          <ol>
+            <li>Đóng gói sản phẩm cẩn thận kèm hoá đơn (nếu có).</li>
+            <li>Ghi rõ mã yêu cầu #{{ vm.existingReturn.return_id }} bên ngoài kiện hàng.</li>
+            <li>Gửi hàng đến địa chỉ kho của GreenDrop bên dưới.</li>
+          </ol>
+          <div class="gd-alert gd-alert-warning mb-2">Chi phí vận chuyển ban đầu do khách hàng chi trả; sẽ được hoàn lại cùng tiền hàng sau khi kiểm tra đạt yêu cầu.</div>
+          <p><strong>Địa chỉ kho:</strong> GreenDrop Warehouse, 123 Vo Van Ngan, Thu Duc, TP. Ho Chi Minh
+            <button class="btn-gd btn-gd-secondary btn-gd-sm ms-2" ng-click="vm.copyAddress()">{{ vm.addressCopied ? 'Đã sao chép' : 'Sao chép' }}</button>
+          </p>
+
+          <div ng-if="!vm.existingReturn.tracking_number">
+            <hr>
+            <label class="gd-label">Đơn vị vận chuyển</label>
+            <select class="form-select-gd mb-2" ng-model="vm.trackingForm.carrier">
+              <option>GHTK</option><option>GHN</option><option>Viettel Post</option><option>Khác</option>
+            </select>
+            <label class="gd-label">Mã vận đơn</label>
+            <input class="form-control-gd mb-2" ng-model="vm.trackingForm.tracking_number" placeholder="Nhập mã vận đơn">
+            <button class="btn-gd btn-gd-primary w-100" ng-click="vm.submitTracking()">Tiếp tục - Xác nhận đã gửi hàng</button>
+          </div>
+          <div ng-if="vm.existingReturn.tracking_number" class="gd-alert gd-alert-success mt-2">
+            Đã ghi nhận mã vận đơn: <strong>{{ vm.existingReturn.tracking_number }}</strong>. Chúng tôi sẽ cập nhật khi nhận được hàng.
+          </div>
+        </div>
+      </div>
+
+      <div ng-if="vm.existingReturn.status === 'completed'" class="text-center py-3">
+        <div ng-if="!vm.latestRefund() || vm.latestRefund().status === 'processing'">
+          <div class="gd-modal-icon success mx-auto"><i class="bi bi-box-seam"></i></div>
+          <h2 class="gd-h2">Đã nhận hàng</h2>
+          <p class="text-muted">Đơn hàng đã được kiểm tra và đang xử lý hoàn tiền.</p>
+          <table class="table gd-card text-start" ng-if="vm.latestRefund()">
+            <tbody>
+              <tr><td>Số tiền</td><td>{{ vm.latestRefund().amount | gdCurrency }}</td></tr>
+              <tr><td>Phương thức</td><td>{{ vm.paymentMethodLabel() }}</td></tr>
+              <tr><td>Trạng thái</td><td><span class="gd-badge gd-badge-info">Đang xử lý</span></td></tr>
+            </tbody>
+          </table>
+          <button class="btn-gd btn-gd-secondary" disabled>Kết quả xét duyệt</button>
+        </div>
+
+        <div ng-if="vm.latestRefund().status === 'completed'">
+          <div class="gd-modal-icon success mx-auto"><i class="bi bi-check-lg"></i></div>
+          <h2 class="gd-h2">Hoàn tiền thành công</h2>
+          <p class="text-muted">Số tiền {{ vm.latestRefund().amount | gdCurrency }} đã được hoàn về phương thức thanh toán ban đầu.</p>
+        </div>
+
+        <div ng-if="vm.latestRefund().status === 'failed'">
+          <div class="gd-alert gd-alert-error text-start">
+            <i class="bi bi-exclamation-triangle"></i>
+            <div>
+              <strong>Không thể hoàn tiền tự động.</strong>
+              <div>Yêu cầu của bạn đã được chuyển cho bộ phận hỗ trợ xử lý thủ công.</div>
+            </div>
+          </div>
+          <table class="table gd-card text-start">
+            <tbody>
+              <tr><td>Số tiền</td><td>{{ vm.latestRefund().amount | gdCurrency }}</td></tr>
+              <tr><td>Phương thức</td><td>{{ vm.paymentMethodLabel() }}</td></tr>
+              <tr><td>Trạng thái</td><td><span class="gd-badge gd-badge-error">Thất bại</span></td></tr>
+            </tbody>
+          </table>
+          <div class="mt-2"><a href="/lien-he" class="btn-gd btn-gd-secondary btn-gd-pill">Liên hệ hỗ trợ</a></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<gd-recently-viewed></gd-recently-viewed>
+<gd-app-promo></gd-app-promo>
+<gd-newsletter></gd-newsletter>

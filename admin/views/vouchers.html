@@ -1,0 +1,59 @@
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h2 class="gd-h2 mb-0">Quản lý voucher</h2>
+  <button class="btn-gd btn-gd-primary btn-gd-sm" ng-click="vm.newVoucher()" ng-if="!vm.showForm">+ Tạo voucher</button>
+</div>
+
+<p ng-if="vm.loading" class="gd-loading-block">Đang tải...</p>
+
+<div class="gd-admin-table-wrap" ng-if="!vm.loading && !vm.showForm">
+  <table class="table align-middle">
+    <thead><tr><th>Mã</th><th>Loại giảm</th><th>Giá trị</th><th>Đơn tối thiểu</th><th>Đã dùng</th><th>Hiệu lực</th><th>Trạng thái</th><th></th></tr></thead>
+    <tbody>
+      <tr ng-repeat="v in vm.vouchers">
+        <td>{{ v.code }}</td>
+        <td>{{ v.discount_type === 'percent' ? 'Phần trăm' : 'Số tiền cố định' }}</td>
+        <td>{{ v.discount_value }}{{ v.discount_type === 'percent' ? '%' : 'đ' }}</td>
+        <td>{{ v.min_order_value | gdCurrency }}</td>
+        <td>{{ v.used_count }}/{{ v.max_usage || '∞' }}</td>
+        <td>{{ v.start_at | gdDate:'HH:mm (dd/MM/yyyy)' }} --&gt; {{ v.end_at | gdDate:'HH:mm (dd/MM/yyyy)' }}</td>
+        <td><span class="gd-badge" ng-class="v.status === 'active' ? 'gd-badge-success' : 'gd-badge-neutral'">{{ { active: 'Hoạt động', disabled: 'Tạm ngưng', expired: 'Hết hạn' }[v.status] || v.status }}</span></td>
+        <td class="text-end">
+          <button class="btn-gd btn-gd-secondary btn-gd-sm" ng-click="vm.editVoucher(v)">Sửa</button>
+          <button class="btn-gd btn-gd-destructive btn-gd-sm ms-1" ng-click="vm.remove(v)">Xoá</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="gd-card" ng-if="vm.showForm">
+  <h3 class="gd-h3">{{ vm.editingId ? 'Sửa voucher' : 'Tạo voucher mới' }}</h3>
+  <form ng-submit="vm.save()">
+    <div class="row g-3">
+      <div class="col-md-4"><label class="gd-label">Mã voucher</label><input class="form-control-gd" ng-model="vm.form.code" required></div>
+      <div class="col-md-4">
+        <label class="gd-label">Loại giảm giá</label>
+        <select class="form-select-gd" ng-model="vm.form.discount_type">
+          <option value="percent">Phần trăm</option>
+          <option value="fixed">Số tiền cố định</option>
+        </select>
+      </div>
+      <div class="col-md-4"><label class="gd-label">Giá trị</label><input type="number" class="form-control-gd" ng-model="vm.form.discount_value"></div>
+      <div class="col-md-4"><label class="gd-label">Đơn tối thiểu</label><input type="number" class="form-control-gd" ng-model="vm.form.min_order_value"></div>
+      <div class="col-md-4"><label class="gd-label">Giới hạn sử dụng (0 = không giới hạn)</label><input type="number" class="form-control-gd" ng-model="vm.form.max_usage"></div>
+      <div class="col-md-4">
+        <label class="gd-label">Trạng thái</label>
+        <select class="form-select-gd" ng-model="vm.form.status">
+          <option value="active">Hoạt động</option>
+          <option value="disabled">Tạm ngưng</option>
+          <option value="expired">Hết hạn</option>
+        </select>
+      </div>
+      <div class="col-md-6"><label class="gd-label">Ngày bắt đầu</label><input type="datetime-local" class="form-control-gd" ng-model="vm.form.start_at"></div>
+      <div class="col-md-6"><label class="gd-label">Ngày kết thúc</label><input type="datetime-local" class="form-control-gd" ng-model="vm.form.end_at"></div>
+    </div>
+    <p class="gd-field-error mt-2" ng-if="vm.errorMessage">{{ vm.errorMessage }}</p>
+    <button type="submit" class="btn-gd btn-gd-primary mt-3">Lưu</button>
+    <button type="button" class="btn-gd btn-gd-secondary ms-2 mt-3" ng-click="vm.cancel()">Huỷ</button>
+  </form>
+</div>
