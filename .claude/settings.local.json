@@ -1,0 +1,33 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm -v)",
+      "Bash(mysql --version)",
+      "Bash(command -v sqlite3)",
+      "Bash(sudo -n true)",
+      "Bash(docker info *)",
+      "Bash(docker rm *)",
+      "Bash(docker run *)",
+      "Bash(node *)",
+      "Bash(docker exec *)",
+      "Bash(echo \"SCHEMA_EXIT=$?\")",
+      "Bash(docker compose *)",
+      "Bash(docker-compose version *)",
+      "Bash(curl -s http://localhost:4000/api/health)",
+      "Bash(curl -s http://localhost:4000/api/categories)",
+      "Bash(curl -s \"http://localhost:4000/api/products?limit=3\")",
+      "Bash(curl -s -X POST http://localhost:4000/api/orders -H 'Content-Type: application/json' -H 'Authorization: Bearer __CMDSUB_OUTPUT__' -d '{ *)",
+      "Bash(awk '/INSERT INTO PRODUCT_ATTRIBUTES/{flag=1} flag{print} /INSERT INTO PRODUCT_FAQS/{exit}' /mnt/c/Workspace/GreenDrop/init.sql)",
+      "Bash(curl *)",
+      "Bash(npx playwright *)",
+      "Bash(npm ls *)",
+      "Bash(npm init *)",
+      "Bash(npm install *)",
+      "Bash(ldd ~/.cache/ms-playwright/chromium-1228/chrome-linux/chrome)",
+      "Bash(apt-get download *)",
+      "Bash(grep -rl \"Cảm ơn bạn đã chọn GreenDrop\" .)",
+      "Bash(find . -path ./node_modules -prune -o -iname \"*login*\" -print -o -iname \"*register*\" -print)",
+      "WebSearch"
+    ]
+  }
+}
