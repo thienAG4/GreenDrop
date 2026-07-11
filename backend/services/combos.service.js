@@ -296,22 +296,14 @@ function buildPreviewPrompt(items) {
   return prompt;
 }
 
-// Calls Pixazo's SDXL Base 1.0 image API - requires PIXAZO_API_KEY. Falls back
-// to a placeholder image when no key is configured, same simulation pattern
-// the rest of this codebase uses for payment gateways / email-SMS (see
-// utils/notify.js) so the app still runs end-to-end with zero external accounts.
-async function generateAiPreview(items) {
-  if (!items || !items.length) throw new HttpError(400, 'A design needs at least one component');
+// How many candidate images the AI Builder offers the customer to choose from.
+const PREVIEW_VARIANT_COUNT = 3;
 
-  if (!process.env.PIXAZO_API_KEY) {
-    const seed = items.map((i) => i.product_id).join('-');
-    return {
-      image_url: `https://placehold.co/600x400?text=AI+Terrarium+Preview+${encodeURIComponent(seed)}`,
-      generated_at: new Date().toISOString(),
-    };
-  }
-
-  const prompt = buildPreviewPrompt(items);
+// One call to Pixazo's SDXL Base 1.0 image API for a single candidate image.
+// Each call uses a fresh random seed so the same prompt yields visually
+// distinct variants. Throws an HttpError on any failure so the caller can
+// decide how to react across the batch of candidates.
+async function requestPixazoImage(prompt) {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), PIXAZO_TIMEOUT_MS);
   let response;
@@ -368,10 +360,39 @@ async function generateAiPreview(items) {
     throw new HttpError(422, 'The AI image service could not generate an image for this combination, please try a different one');
   }
 
-  return {
-    image_url: body.imageUrl,
-    generated_at: new Date().toISOString(),
-  };
+  return { image_url: body.imageUrl, generated_at: new Date().toISOString() };
+}
+
+// Generates PREVIEW_VARIANT_COUNT candidate images for a design so the customer
+// can pick the one they like best. Falls back to placeholder images when no key
+// is configured, same simulation pattern the rest of this codebase uses for
+// payment gateways / email-SMS (see utils/notify.js) so the app still runs
+// end-to-end with zero external accounts. Returns { previews: [...] }.
+async function generateAiPreview(items) {
+  if (!items || !items.length) throw new HttpError(400, 'A design needs at least one component');
+
+  if (!process.env.PIXAZO_API_KEY) {
+    const seed = items.map((i) => i.product_id).join('-');
+    const previews = Array.from({ length: PREVIEW_VARIANT_COUNT }, (_, i) => ({
+      image_url: `https://placehold.co/600x400?text=AI+Terrarium+Preview+${i + 1}+${encodeURIComponent(seed)}`,
+      generated_at: new Date().toISOString(),
+    }));
+    return { previews };
+  }
+
+  const prompt = buildPreviewPrompt(items);
+  // Fire the candidates concurrently and keep whichever succeed - a single
+  // flaky call shouldn't deny the customer the others. Only surface an error if
+  // every candidate failed, re-raising the first failure's (already
+  // shopper-friendly) HttpError so the rate-limit/misconfig/timeout distinction
+  // is preserved.
+  const results = await Promise.allSettled(
+    Array.from({ length: PREVIEW_VARIANT_COUNT }, () => requestPixazoImage(prompt))
+  );
+  const previews = results.filter((r) => r.status === 'fulfilled').map((r) => r.value);
+  if (!previews.length) throw results[0].reason;
+
+  return { previews };
 }
 
 module.exports = {
