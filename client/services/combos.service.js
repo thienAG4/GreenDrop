@@ -1,6 +1,7 @@
 angular.module('app').factory('combosService', function ($http, API_BASE_URL) {
+  // Returns an array of AI-generated candidate previews ({ image_url, generated_at }).
   function aiPreview(items) {
-    return $http.post(API_BASE_URL + '/combos/ai-preview', { items: items }).then(function (res) { return res.data.data; });
+    return $http.post(API_BASE_URL + '/combos/ai-preview', { items: items }).then(function (res) { return res.data.data.previews; });
   }
   function mine() {
     return $http.get(API_BASE_URL + '/combos/mine').then(function (res) { return res.data.data; });

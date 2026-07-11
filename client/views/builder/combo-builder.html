@@ -83,17 +83,31 @@
             </div>
             <span class="text-muted" ng-if="!vm.placed.length">Chưa có thành phần nào được chọn. Nhấn (+) từ thư viện bên trái.</span>
           </div>
-          <button class="btn-gd btn-gd-primary" ng-disabled="vm.generatingPreview" ng-click="vm.generateAiPreview()">
+          <button class="btn-gd btn-gd-primary" ng-disabled="vm.generatingPreview || !vm.meetsMinimum()" ng-click="vm.generateAiPreview()">
             <span class="gd-spinner gd-spinner-sm" ng-if="vm.generatingPreview"></span>
             <i class="bi bi-stars" ng-if="!vm.generatingPreview"></i>
-            {{ vm.generatingPreview ? 'Đang tạo ảnh...' : 'Tạo ảnh AI' }}
+            {{ vm.generatingPreview ? 'Đang tạo ảnh...' : (vm.aiPreviews.length ? 'Tạo lại ảnh với AI' : 'Tạo ảnh với AI') }}
           </button>
           <div class="text-center mt-3" ng-if="vm.generatingPreview">
             <span class="gd-spinner"></span>
-            <p class="text-muted mt-2">AI đang tạo ảnh terrarium của bạn, vui lòng chờ trong giây lát...</p>
+            <p class="text-muted mt-2">AI đang tạo 3 ảnh terrarium của bạn, vui lòng chờ trong giây lát...</p>
           </div>
-          <div class="text-center mt-3" ng-if="vm.aiPreview && !vm.generatingPreview">
-            <img ng-src="{{ vm.aiPreview.image_url }}" class="img-fluid rounded">
+          <div class="mt-3" ng-if="vm.aiPreviews.length && !vm.generatingPreview">
+            <p class="text-muted mb-2" style="font-size: 13px;">AI đã tạo {{ vm.aiPreviews.length }} ảnh — chọn ảnh bạn thích nhất để lưu và đặt hàng.</p>
+            <div class="gd-ai-choice-list">
+              <div class="gd-ai-choice" ng-repeat="preview in vm.aiPreviews"
+                   ng-class="{'gd-ai-choice-selected': vm.isPreviewSelected(preview)}"
+                   ng-click="vm.selectPreview(preview)" title="Chọn ảnh này">
+                <div class="gd-ai-choice-badge" ng-if="vm.isPreviewSelected(preview)"><i class="bi bi-check-circle-fill"></i> Đã chọn</div>
+                <img ng-src="{{ preview.image_url }}" alt="Ảnh AI {{ $index + 1 }}">
+                <div class="gd-ai-choice-bar">
+                  <span style="font-size: 13px; font-weight: 700;">Ảnh {{ $index + 1 }}</span>
+                  <button type="button" class="btn-gd btn-gd-secondary btn-gd-sm" ng-click="vm.openPreview(preview, $event)">
+                    <i class="bi bi-arrows-fullscreen"></i> Xem chi tiết
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -138,19 +152,7 @@
             <p class="text-muted text-center mt-2" style="font-size: 12px;">Kéo vật liệu từ thư viện vào bình, hoặc kéo vật liệu đã đặt để đổi vị trí.</p>
 
             <hr>
-            <p class="text-muted" style="font-size: 13px;">Khi đã sắp xếp xong, tạo ảnh AI dựa trên các vật liệu và vị trí bạn vừa đặt.</p>
-            <button class="btn-gd btn-gd-primary" ng-disabled="vm.generatingPreview" ng-click="vm.generateAiPreview()">
-              <span class="gd-spinner gd-spinner-sm" ng-if="vm.generatingPreview"></span>
-              <i class="bi bi-stars" ng-if="!vm.generatingPreview"></i>
-              {{ vm.generatingPreview ? 'Đang tạo ảnh...' : 'Tạo ảnh AI' }}
-            </button>
-            <div class="text-center mt-3" ng-if="vm.generatingPreview">
-              <span class="gd-spinner"></span>
-              <p class="text-muted mt-2">AI đang tạo ảnh terrarium của bạn, vui lòng chờ trong giây lát...</p>
-            </div>
-            <div class="text-center mt-3" ng-if="vm.aiPreview && !vm.generatingPreview">
-              <img ng-src="{{ vm.aiPreview.image_url }}" class="img-fluid rounded">
-            </div>
+            <p class="text-muted" style="font-size: 13px;">Khi đã sắp xếp xong, dùng khung tóm tắt bên phải để lưu thiết kế hoặc đặt hàng.</p>
           </div>
         </div>
       </div>
@@ -195,6 +197,12 @@
       </div>
     </div>
   </div>
+</div>
+
+<!-- Full-size preview lightbox: lets the customer inspect a candidate image in detail -->
+<div class="gd-lightbox" ng-if="vm.zoomedPreview" ng-click="vm.closePreview()">
+  <button type="button" class="gd-lightbox-close" ng-click="vm.closePreview()" aria-label="Đóng">&times;</button>
+  <img ng-src="{{ vm.zoomedPreview.image_url }}" class="gd-lightbox-img" alt="Ảnh AI" ng-click="$event.stopPropagation()">
 </div>
 
 <gd-app-promo></gd-app-promo>

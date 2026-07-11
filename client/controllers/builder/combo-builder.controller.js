@@ -1,6 +1,8 @@
-// Simplification agreed with the user: the "AI Terrarium Builder" generates a
-// placeholder preview image instead of calling a real image-gen model, and the
-// "3D Terrarium Studio" is a 2D click-to-place canvas (not true WebGL/Three.js).
+// Simplification agreed with the user: the "AI Terrarium Builder" generates 3
+// candidate preview images (placeholder images when no PIXAZO_API_KEY is set)
+// and lets the customer pick the one they like best to save/buy, while the
+// "3D Terrarium Studio" is a 2D click-to-place canvas (not true WebGL/Three.js)
+// with no AI image generation - it's purely about interacting with the shape.
 // Both still exercise the real backend business rules (stock checks, pot+soil
 // minimum, pricing, save/add-to-cart).
 angular.module('app').controller('ComboBuilderController', function (
@@ -12,7 +14,8 @@ angular.module('app').controller('ComboBuilderController', function (
   vm.library = [];
   vm.loading = true;
   vm.placed = []; // { product, role, x, y, quantity } - x/y are % offsets within the pot shape, only meaningful in 3D mode
-  vm.aiPreview = null;
+  vm.aiPreviews = []; // up to 3 AI-generated candidate images (AI mode only)
+  vm.selectedPreview = null; // the candidate the customer picked to save/buy
   vm.generatingPreview = false;
   vm.errorMessage = null;
   vm.comboName = 'My Terrarium Design';
@@ -68,6 +71,13 @@ angular.module('app').controller('ComboBuilderController', function (
     return group ? group.products : [];
   };
 
+  // Any change to the design (or switching modes) invalidates the AI candidates
+  // already on screen - they no longer depict what the customer has selected.
+  function resetPreviews() {
+    vm.aiPreviews = [];
+    vm.selectedPreview = null;
+  }
+
   vm.setMode = function (mode) {
     if (mode === '3d' && !vm.isCustomer) {
       vm.errorMessage = 'Chỉ tài khoản Khách hàng mới có thể sử dụng 3D Terrarium Studio.';
@@ -75,6 +85,7 @@ angular.module('app').controller('ComboBuilderController', function (
     }
     vm.mode = mode;
     vm.errorMessage = null;
+    resetPreviews();
   };
 
   vm.selectedPot = function () {
@@ -151,12 +162,12 @@ angular.module('app').controller('ComboBuilderController', function (
       var pos = defaultPosition(vm.placed.length);
       vm.placed.push({ product: product, role: role, quantity: 1, x: pos.x, y: pos.y });
     }
-    vm.aiPreview = null;
+    resetPreviews();
   };
 
   vm.removeComponent = function (item) {
     vm.placed.splice(vm.placed.indexOf(item), 1);
-    vm.aiPreview = null;
+    resetPreviews();
   };
 
   vm.changeQty = function (item, delta) {
@@ -227,14 +238,15 @@ angular.module('app').controller('ComboBuilderController', function (
     });
   }
 
-  // Carries the currently-shown AI preview into the create payload so the
+  // Carries the customer's chosen AI candidate into the create payload so the
   // backend can persist it against the saved design (combos.service.js's
-  // createCombo/updateCombo). vm.aiPreview is already nulled out by
+  // createCombo/updateCombo). vm.selectedPreview is already cleared by
   // addComponent/removeComponent/reposition whenever the design changes, so
   // this never attaches a now-stale image without any extra bookkeeping here.
+  // 3D designs have no AI image, so this is simply absent for them.
   function buildSavePayload(comboType) {
     var payload = { combo_type: comboType, name: vm.comboName, items: buildItemsPayload() };
-    if (vm.aiPreview) payload.preview_image_base64 = vm.aiPreview.image_url;
+    if (vm.selectedPreview) payload.preview_image_base64 = vm.selectedPreview.image_url;
     return payload;
   }
 
@@ -251,6 +263,7 @@ angular.module('app').controller('ComboBuilderController', function (
     return 'AI không thể tạo ảnh lúc này, vui lòng thử lại hoặc chuyển sang 3D Terrarium Studio.';
   }
 
+  // AI mode only: ask the backend for 3 candidate images of the current design.
   vm.generateAiPreview = function () {
     if (!vm.meetsMinimum()) {
       vm.errorMessage = MINIMUM_MESSAGE;
@@ -258,13 +271,35 @@ angular.module('app').controller('ComboBuilderController', function (
     }
     vm.errorMessage = null;
     vm.generatingPreview = true;
-    combosService.aiPreview(buildItemsPayload()).then(function (preview) {
-      vm.aiPreview = preview;
+    resetPreviews();
+    combosService.aiPreview(buildItemsPayload()).then(function (previews) {
+      vm.aiPreviews = previews || [];
+      // Pre-select the first candidate so the customer can save/buy immediately;
+      // they can still click another one to change their pick.
+      vm.selectedPreview = vm.aiPreviews[0] || null;
       vm.generatingPreview = false;
     }).catch(function (err) {
       vm.generatingPreview = false;
       vm.errorMessage = friendlyAiError(err);
     });
+  };
+
+  vm.selectPreview = function (preview) {
+    vm.selectedPreview = preview;
+  };
+  vm.isPreviewSelected = function (preview) {
+    return vm.selectedPreview === preview;
+  };
+
+  // Full-size lightbox to inspect a candidate. stopPropagation keeps the
+  // "view detail" click from also toggling the card's select handler.
+  vm.zoomedPreview = null;
+  vm.openPreview = function (preview, $event) {
+    if ($event) $event.stopPropagation();
+    vm.zoomedPreview = preview;
+  };
+  vm.closePreview = function () {
+    vm.zoomedPreview = null;
   };
 
   function requireLogin() {
@@ -275,10 +310,22 @@ angular.module('app').controller('ComboBuilderController', function (
     return true;
   }
 
+  // AI mode revolves around picking one of the generated images, so a design
+  // can't be saved/bought there until the customer has generated and chosen
+  // one. 3D mode has no image step, so it's exempt.
+  var PICK_IMAGE_MESSAGE = 'Vui lòng tạo và chọn 1 ảnh AI bạn thích trước khi lưu hoặc đặt hàng.';
+  function needsImagePick() {
+    return vm.mode === 'ai' && !vm.selectedPreview;
+  }
+
   vm.saveDesign = function () {
     if (!requireLogin()) return;
     if (!vm.meetsMinimum()) {
       vm.errorMessage = MINIMUM_MESSAGE;
+      return;
+    }
+    if (needsImagePick()) {
+      vm.errorMessage = PICK_IMAGE_MESSAGE;
       return;
     }
     var comboType = vm.mode === '3d' ? '3d_builder' : 'ai_builder';
@@ -295,6 +342,10 @@ angular.module('app').controller('ComboBuilderController', function (
     if (!requireLogin()) return;
     if (!vm.meetsMinimum()) {
       vm.errorMessage = MINIMUM_MESSAGE;
+      return;
+    }
+    if (needsImagePick()) {
+      vm.errorMessage = PICK_IMAGE_MESSAGE;
       return;
     }
     vm.errorMessage = null;
