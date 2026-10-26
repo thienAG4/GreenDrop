@@ -102,7 +102,7 @@ angular.module('app').controller('HomeController', function (
   // BANNERS.start_at/end_at come back as MySQL "YYYY-MM-DD HH:MM:SS" strings
   // (config/db.js sets dateStrings: true, no 'T'/'Z') - parse explicitly as
   // UTC rather than handing them to `new Date(str)` directly, which browsers
-  // read as local time (same bug class described in AGENTS.md for the
+  // read as local time (same bug class documented in the project guidelines for the
   // checkout payment countdown).
   function parseUtc(str) { return new Date(str.replace(' ', 'T') + 'Z'); }
   function formatDayMonth(d) { return pad2(d.getUTCDate()) + '/' + pad2(d.getUTCMonth() + 1); }

@@ -4,7 +4,7 @@ services:
     container_name: greendrop-mysql
     restart: unless-stopped
     environment:
-      MYSQL_ROOT_PASSWORD: example
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-example}
     ports:
       - "3306:3306"
     volumes:
@@ -12,7 +12,7 @@ services:
       - ./backend/create_database.sql:/docker-entrypoint-initdb.d/01-create_database.sql:ro
       - ./backend/init.sql:/docker-entrypoint-initdb.d/02-init.sql:ro
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-pexample"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-p${DB_PASSWORD:-example}"]
       interval: 5s
       timeout: 5s
       retries: 20
@@ -29,9 +29,9 @@ services:
       DB_HOST: db
       DB_PORT: 3306
       DB_USER: root
-      DB_PASSWORD: example
+      DB_PASSWORD: ${DB_PASSWORD:-example}
       DB_NAME: ecommerce_db
-      JWT_SECRET: change-this-to-a-long-random-string
+      JWT_SECRET: ${JWT_SECRET:?Set JWT_SECRET in .env (see .env.example)}
       JWT_EXPIRES_IN: 7d
       PUBLIC_UPLOADS_URL: http://localhost:4000/uploads
       PIXAZO_API_KEY: ${PIXAZO_API_KEY:-}
